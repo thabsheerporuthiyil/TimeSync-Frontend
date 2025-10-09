@@ -1,0 +1,543 @@
+{
+  "categories": [
+    {
+      "id": "1",
+      "title": "Men's Watches",
+      "image": "/src/assets/homeimg5.jpg",
+      "filterKey": "Men"
+    },
+    {
+      "id": "2",
+      "title": "Women's Watches",
+      "image": "/src/assets/ladies1.jpg",
+      "filterKey": "Ladies"
+    },
+    {
+      "id": "3",
+      "title": "Luxury Collection",
+      "image": "/src/assets/homeimg1.jpg",
+      "filterKey": "Luxury"
+    }
+  ],
+  "brands": [
+    {
+      "name": "Titan",
+      "logo": "src/assets/titan.png",
+      "id": "ecb9"
+    },
+    {
+      "name": "Rolex",
+      "logo": "src/assets/rolex.svg",
+      "id": "796f"
+    },
+    {
+      "name": "Hublot",
+      "logo": "src/assets/hublot.png",
+      "id": "4cab"
+    },
+    {
+      "name": "Casio",
+      "logo": "src/assets/casio.png",
+      "id": "81c0"
+    },
+    {
+      "name": "Seiko",
+      "logo": "src/assets/seiko.png",
+      "id": "79f2"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "brand": "Rolex",
+      "name": "Rolex submariner Automatic Chronometer",
+      "price": "30,90,866",
+      "category": "Men",
+      "image": "/src/assets/Products/rolex1.jpg",
+      "stock": 10
+    },
+    {
+      "id": "2",
+      "brand": "Titan",
+      "name": "Titan Regalia Arc",
+      "price": "12,995",
+      "category": "Men",
+      "image": "/src/assets/Products/tissot1.jpg",
+      "stock": 4
+    },
+    {
+      "id": "3",
+      "brand": "Hublot",
+      "name": "Hublot Classic Fusion Chronograph Automatic",
+      "price": "14,59,499",
+      "category": "Men",
+      "image": "/src/assets/Products/hublot1.jpg",
+      "stock": 2
+    },
+    {
+      "id": "4",
+      "brand": "Casio",
+      "name": "Casio G-Shock 2100 Series",
+      "price": "11,229",
+      "category": "Men",
+      "image": "/src/assets/Products/casio1.jpg",
+      "stock": 2
+    },
+    {
+      "id": "5",
+      "brand": "Seiko",
+      "name": "Seiko 5 Automatic",
+      "price": "30,000",
+      "category": "Men",
+      "image": "/src/assets/Products/seiko1.jpg",
+      "stock": 4
+    },
+    {
+      "id": "6",
+      "brand": "Rolex",
+      "name": " Rolex Day-Date Aventurine",
+      "price": "22,76,776",
+      "category": "Ladies",
+      "image": "/src/assets/Products/rolex2.jpg",
+      "stock": 5
+    },
+    {
+      "id": "7",
+      "brand": "Casio",
+      "name": "Casio Balmain women",
+      "price": "52,000",
+      "category": "Ladies",
+      "image": "/src/assets/Products/casio2.jpg",
+      "stock": 0
+    },
+    {
+      "id": "8",
+      "brand": "Titan",
+      "name": "Titan workmode",
+      "price": "7,695",
+      "category": "Ladies",
+      "image": "/src/assets/Products/titan2.jpg",
+      "stock": 5
+    },
+    {
+      "id": "9",
+      "brand": "Seiko",
+      "name": "Seiko 5 Sports White",
+      "price": "28,800",
+      "category": "Ladies",
+      "image": "/src/assets/Products/seiko2.jpg",
+      "stock": 5
+    },
+    {
+      "id": "10",
+      "brand": "Hublot",
+      "name": "Hublot Big Bang Automatic Diamond Black",
+      "price": "15,30,000",
+      "category": "Ladies",
+      "image": "/src/assets/Products/hublot2.jpg",
+      "stock": 0
+    },
+    {
+      "id": "11",
+      "brand": "Seiko",
+      "name": "Seiko 5 automatic Arabic",
+      "price": "15,000",
+      "category": "Men",
+      "image": "/src/assets/Products/seiko3.jpg",
+      "stock": 5
+    },
+    {
+      "id": "12",
+      "brand": "Hublot",
+      "name": "Hublot Spirit Of Big Bang",
+      "price": "17,50,840",
+      "category": "Men",
+      "image": "/src/assets/Products/hublot3.jpg",
+      "stock": 0
+    },
+    {
+      "id": "13",
+      "brand": "Casio",
+      "name": "G-STEEL Alarm World Time Quartz Analog",
+      "price": "13,669",
+      "category": "Men",
+      "image": "/src/assets/Products/casio3.jpg",
+      "stock": 5
+    },
+    {
+      "id": "14",
+      "brand": "Titan",
+      "name": "Titan Purple Ceramics",
+      "price": "9,050",
+      "category": "Ladies",
+      "image": "/src/assets/Products/titan3.jpg",
+      "stock": 5
+    },
+    {
+      "id": "15",
+      "brand": "Rolex",
+      "name": "Rolex Purple Ceramics",
+      "price": "7,42,000",
+      "category": "Ladies",
+      "image": "/src/assets/Products/rolex3.jpg",
+      "stock": 0
+    },
+    {
+      "id": "1759986632573",
+      "name": "Rolex new",
+      "brand": "Rolex",
+      "price": "9999",
+      "image": "https://cdn2.jomashop.com/media/catalog/product/cache/0ee3019724ce73007b606b54ba535a23/t/i/tissot-tclassic-gentleman-automatic-black-dial-watch-t1274071605101-t1274071605101.jpg?width=546&height=546",
+      "category": "Men",
+      "stock": 5
+    }
+  ],
+  "users": [
+    {
+      "id": "6a26",
+      "name": "Thabsheer",
+      "email": "thabu@gmail.com",
+      "password": "12345678",
+      "role": "user",
+      "blocked": false,
+      "cart": [
+        {
+          "id": "2",
+          "brand": "Titan",
+          "name": "Titan Regalia Arc",
+          "price": "12,995",
+          "category": "Men",
+          "image": "/src/assets/Products/tissot1.jpg",
+          "stock": 3,
+          "quantity": 1
+        }
+      ],
+      "wishlist": [],
+      "orders": [
+        {
+          "orderId": "ORD1759731580327403",
+          "items": [
+            {
+              "id": "3",
+              "brand": "Hublot",
+              "name": "Hublot Classic Fusion Chronograph Automatic",
+              "price": "14,59,499",
+              "category": "Men",
+              "image": "/src/assets/Products/hublot1.jpg",
+              "stock": 4,
+              "quantity": 1
+            },
+            {
+              "id": "4",
+              "brand": "Casio",
+              "name": "Casio G-Shock 2100 Series",
+              "price": "11,229",
+              "category": "Men",
+              "image": "/src/assets/Products/casio1.jpg",
+              "stock": 4,
+              "quantity": 1
+            }
+          ],
+          "totalPrice": 1470728,
+          "paymentMethod": "cod",
+          "paymentDetails": {
+            "cardNumber": "",
+            "name": "",
+            "expiry": "",
+            "cvv": "",
+            "upiId": "",
+            "netbankingId": "",
+            "billingName": "ss",
+            "billingEmail": "ss@gmail.com",
+            "billingPhone": "9999999999",
+            "billingAddress": "dsfdsbhbs",
+            "billingCity": "efs",
+            "billingState": "fds",
+            "billingZip": "324344",
+            "billingCountry": "India"
+          },
+          "orderDate": "10/6/2025",
+          "orderTime": "11:49:40 AM",
+          "status": "Processing",
+          "delivery": {
+            "status": "Pending",
+            "expectedDate": "10/10/2025"
+          }
+        },
+        {
+          "orderId": "ORD1759828411920421",
+          "items": [
+            {
+              "id": "5",
+              "brand": "Seiko",
+              "name": "Seiko 5 Automatic",
+              "price": "30,000",
+              "category": "Men",
+              "image": "/src/assets/Products/seiko1.jpg",
+              "stock": 4,
+              "quantity": 1
+            }
+          ],
+          "totalPrice": 30000,
+          "paymentMethod": "cod",
+          "paymentDetails": {
+            "cardNumber": "",
+            "name": "",
+            "expiry": "",
+            "cvv": "",
+            "upiId": "",
+            "netbankingId": "",
+            "billingName": "ss",
+            "billingEmail": "ss@gmail.com",
+            "billingPhone": "9999999999",
+            "billingAddress": "dsfdsbhbs",
+            "billingCity": "efs",
+            "billingState": "fds",
+            "billingZip": "324344",
+            "billingCountry": "India"
+          },
+          "orderDate": "10/7/2025",
+          "orderTime": "2:43:31 PM",
+          "status": "Processing"
+        }
+      ]
+    },
+    {
+      "id": "5bbf",
+      "name": "Shakkeera",
+      "email": "1234@gmail.com",
+      "password": "12345678",
+      "role": "user",
+      "cart": [],
+      "wishlist": [
+        {
+          "id": "2",
+          "brand": "Titan",
+          "name": "Titan Regalia Arc",
+          "price": "12,995",
+          "category": "Men",
+          "image": "/src/assets/Products/tissot1.jpg",
+          "stock": 5
+        },
+        {
+          "id": "3",
+          "brand": "Hublot",
+          "name": "Hublot Classic Fusion Chronograph Automatic",
+          "price": "14,59,499",
+          "category": "Men",
+          "image": "/src/assets/Products/hublot1.jpg",
+          "stock": 5
+        }
+      ],
+      "orders": [
+        {
+          "orderId": "ORD1759740264156228",
+          "items": [
+            {
+              "id": "2",
+              "brand": "Titan",
+              "name": "Titan Regalia Arc",
+              "price": "12,995",
+              "category": "Men",
+              "image": "/src/assets/Products/tissot1.jpg",
+              "stock": 5,
+              "quantity": 2
+            },
+            {
+              "id": "3",
+              "brand": "Hublot",
+              "name": "Hublot Classic Fusion Chronograph Automatic",
+              "price": "14,59,499",
+              "category": "Men",
+              "image": "/src/assets/Products/hublot1.jpg",
+              "stock": 5,
+              "quantity": 1
+            },
+            {
+              "id": "4",
+              "brand": "Casio",
+              "name": "Casio G-Shock 2100 Series",
+              "price": "11,229",
+              "category": "Men",
+              "image": "/src/assets/Products/casio1.jpg",
+              "stock": 5,
+              "quantity": 1
+            },
+            {
+              "id": "1",
+              "brand": "Rolex",
+              "name": "Rolex submariner Automatic Chronometer",
+              "price": "30,90,866",
+              "category": "Men",
+              "image": "/src/assets/Products/rolex1.jpg",
+              "stock": 9,
+              "quantity": 1
+            }
+          ],
+          "totalPrice": 4587584,
+          "paymentMethod": "cod",
+          "paymentDetails": {
+            "cardNumber": "",
+            "name": "",
+            "expiry": "",
+            "cvv": "",
+            "upiId": "",
+            "netbankingId": "",
+            "billingName": "ss",
+            "billingEmail": "ss@gmail.com",
+            "billingPhone": "9999999999",
+            "billingAddress": "dsfdsbhbs",
+            "billingCity": "efs",
+            "billingState": "fds",
+            "billingZip": "324344",
+            "billingCountry": "India"
+          },
+          "orderDate": "10/6/2025",
+          "orderTime": "2:14:24 PM",
+          "status": "Processing"
+        }
+      ],
+      "blocked": true
+    },
+    {
+      "id": "a950",
+      "name": "Admin",
+      "email": "admintimesync@gmail.com",
+      "password": "12345678",
+      "role": "admin",
+      "blocked": false,
+      "orders": [
+        {
+          "orderId": "ORD1759734551804122",
+          "items": [
+            {
+              "id": "2",
+              "brand": "Titan",
+              "name": "Titan Regalia Arc",
+              "price": "12,995",
+              "category": "Men",
+              "image": "/src/assets/Products/tissot1.jpg",
+              "stock": 5,
+              "quantity": 1
+            },
+            {
+              "id": "1",
+              "brand": "Rolex",
+              "name": "Rolex submariner Automatic Chronometer",
+              "price": "30,90,866",
+              "category": "Men",
+              "image": "/src/assets/Products/rolex1.jpg",
+              "stock": 10,
+              "quantity": 1
+            }
+          ],
+          "totalPrice": 3103861,
+          "paymentMethod": "cod",
+          "paymentDetails": {
+            "cardNumber": "",
+            "name": "",
+            "expiry": "",
+            "cvv": "",
+            "upiId": "",
+            "netbankingId": "",
+            "billingName": "ss",
+            "billingEmail": "ss@gmail.com",
+            "billingPhone": "9999999999",
+            "billingAddress": "dsfdsbhbs",
+            "billingCity": "efs",
+            "billingState": "fds",
+            "billingZip": "324344",
+            "billingCountry": "India"
+          },
+          "orderDate": "10/6/2025",
+          "orderTime": "12:39:11 PM",
+          "status": "Cancelled"
+        },
+        {
+          "orderId": "ORD1759770869071319",
+          "items": [
+            {
+              "id": "5",
+              "brand": "Seiko",
+              "name": "Seiko 5 Automatic",
+              "price": "30,000",
+              "category": "Men",
+              "image": "/src/assets/Products/seiko1.jpg",
+              "stock": 5,
+              "quantity": 1
+            }
+          ],
+          "totalPrice": 30000,
+          "paymentMethod": "cod",
+          "paymentDetails": {
+            "cardNumber": "",
+            "name": "",
+            "expiry": "",
+            "cvv": "",
+            "upiId": "",
+            "netbankingId": "",
+            "billingName": "ss",
+            "billingEmail": "ss@gmail.com",
+            "billingPhone": "9999999999",
+            "billingAddress": "dsfdsbhbs",
+            "billingCity": "efs",
+            "billingState": "fds",
+            "billingZip": "324344",
+            "billingCountry": "India"
+          },
+          "orderDate": "10/6/2025",
+          "orderTime": "10:44:29 PM",
+          "status": "Processing"
+        },
+        {
+          "orderId": "ORD1759986324628379",
+          "items": [
+            {
+              "id": "2",
+              "brand": "Titan",
+              "name": "Titan Regalia Arc",
+              "price": "12,995",
+              "category": "Men",
+              "image": "/src/assets/Products/tissot1.jpg",
+              "stock": 5,
+              "quantity": 1
+            }
+          ],
+          "totalPrice": 12995,
+          "paymentMethod": "cod",
+          "paymentDetails": {
+            "cardNumber": "",
+            "name": "",
+            "expiry": "",
+            "cvv": "",
+            "upiId": "",
+            "netbankingId": "",
+            "billingName": "ss",
+            "billingEmail": "ss@gmail.com",
+            "billingPhone": "9999999999",
+            "billingAddress": "dsfdsbhbs",
+            "billingCity": "efs",
+            "billingState": "fds",
+            "billingZip": "324344",
+            "billingCountry": "India"
+          },
+          "orderDate": "10/9/2025",
+          "orderTime": "10:35:24 AM",
+          "status": "Cancelled"
+        }
+      ],
+      "cart": [],
+      "wishlist": [
+        {
+          "id": "2",
+          "brand": "Titan",
+          "name": "Titan Regalia Arc",
+          "price": "12,995",
+          "category": "Men",
+          "image": "/src/assets/Products/tissot1.jpg",
+          "stock": 4
+        }
+      ]
+    }
+  ]
+}
