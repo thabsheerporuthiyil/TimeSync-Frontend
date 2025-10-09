@@ -13,6 +13,7 @@ export default function Watches() {
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [priceRange, setPriceRange] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   const { cart, addToCart, wishlist,toggleWishlist } = useContext(ShopContext);
   const { user, loading } = useContext(UserContext);
@@ -32,10 +33,12 @@ export default function Watches() {
 
   // Fetch products
   useEffect(() => {
+    setProductsLoading(true);
     axios
       .get("https://timesync-e-commerce.onrender.com/products")
       .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err));
+      .catch((err) => console.error("Error fetching products:", err))
+      .finally(() => setProductsLoading(false));
   }, []);
 
   // restore
@@ -109,36 +112,35 @@ export default function Watches() {
   toast.success("Added to Cart!");
 };
 
-if (loading) {
-  return (
-    <section className="mt-20 p-6 flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-7 w-full max-w-6xl">
-        {[...Array(10)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-white border border-gray-200 rounded-xl shadow p-3 w-full max-w-xs h-96 flex flex-col animate-pulse"
-          >
-            <div className="h-40 bg-gray-200 rounded-lg mb-4" />
-            <div className="space-y-2 flex-grow">
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
-              <div className="h-3 bg-gray-200 rounded w-1/2" />
-              <div className="h-3 bg-gray-200 rounded w-2/3" />
-            </div>
-            <div className="mt-4 space-y-2">
-              <div className="h-5 bg-gray-200 rounded w-1/2" />
-              <div className="flex gap-2 mt-3">
-                <div className="flex-1 h-8 bg-gray-200 rounded" />
-                <div className="flex-1 h-8 bg-gray-200 rounded" />
+if (loading || productsLoading) {
+    return (
+      <section className="mt-20 p-6 flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-7 w-full max-w-6xl">
+          {[...Array(10)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-white border border-gray-200 rounded-xl shadow p-3 w-full max-w-xs h-96 flex flex-col animate-pulse"
+            >
+              <div className="h-40 bg-gray-200 rounded-lg mb-4" />
+              <div className="space-y-2 flex-grow">
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 rounded w-2/3" />
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="h-5 bg-gray-200 rounded w-1/2" />
+                <div className="flex gap-2 mt-3">
+                  <div className="flex-1 h-8 bg-gray-200 rounded" />
+                  <div className="flex-1 h-8 bg-gray-200 rounded" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <p className="mt-8 text-gray-500 text-sm">Loading products...</p>
-    </section>
-  );
-}
+          ))}
+        </div>
+        <p className="mt-8 text-gray-500 text-sm">Loading products...</p>
+      </section>
+    );
+  }
 
 
 
