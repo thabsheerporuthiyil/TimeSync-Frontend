@@ -8,7 +8,7 @@ export default function AboutUs() {
   <div className="grid md:grid-cols-2 items-center max-w-6xl mx-auto">
     {/* Left Side Video */}
     <div>
-      <video
+      <source
         src={aboutVideo} type="video/mp4"
         autoPlay
         loop
