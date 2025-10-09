@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import aboutVideo from '../assets/video.mp4'
+import aboutVideo from '../assets/vid.mp4'
 
 
 export default function AboutUs() {
