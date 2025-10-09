@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import aboutVideo from '../assets/video.mp4'
 
 
 export default function AboutUs() {
@@ -8,7 +9,7 @@ export default function AboutUs() {
     {/* Left Side Video */}
     <div>
       <video
-        src="src/assests/video.mp4"
+        src={aboutVideo} type="video/mp4"
         autoPlay
         loop
         muted
