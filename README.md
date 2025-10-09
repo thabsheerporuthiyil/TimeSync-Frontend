@@ -1,1 +1,1 @@
-<b>TimeSync E-Commerce</b>
+<h1>TimeSync E-Commerce</h1>
