@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "json-server --watch db.json --port 10000"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
@@ -25,7 +26,8 @@
     "swiper": "^12.0.2",
     "tailwind-variants": "^3.1.1",
     "tailwindcss": "^4.1.13",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "json-server": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

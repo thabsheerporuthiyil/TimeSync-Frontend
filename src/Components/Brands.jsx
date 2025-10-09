@@ -5,7 +5,7 @@ export default function Brands() {
   const [brands, setBrands] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/brands")
+    axios.get("https://timesync-e-commerce.onrender.com/brands")
       .then((res) => setBrands(res.data))
       .catch((err) => console.error("Failed to load brands:", err));
   }, []);
