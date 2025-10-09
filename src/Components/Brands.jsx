@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import rolex from "../assets/rolex.svg";
+import hublot from "../assets/hublot.png";
+import casio from "../assets/casio.png";
+import titan from "../assets/titan.png";
+import seiko from "../assets/seiko.png";
 
 export default function Brands() {
-  const [brands, setBrands] = useState([]);
-
-  useEffect(() => {
-    axios.get("https://timesync-e-commerce.onrender.com/brands")
-      .then((res) => setBrands(res.data))
-      .catch((err) => console.error("Failed to load brands:", err));
-  }, []);
+  const brands = [
+    { name: "Titan", logo: titan },
+    { name: "Rolex", logo: rolex },
+    { name: "Hublot", logo: hublot },
+    { name: "Casio", logo: casio },
+    { name: "Seiko", logo: seiko },
+  ];
 
   return (
     <section className="py-12 bg-white text-center">
-      <h2 className="text-3xl font-bold mb-8 text-blue-600">Explore our Brands</h2>
+      <h2 className="text-3xl font-bold mb-8 text-blue-600">
+        Explore our Brands
+      </h2>
       <div className="flex flex-wrap justify-center items-center gap-10">
         {brands.map((brand, index) => (
           <div key={index} className="group cursor-pointer">
