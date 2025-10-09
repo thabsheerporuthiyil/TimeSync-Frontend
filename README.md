@@ -13,3 +13,10 @@ TimeSync E-Commerce is a modern, responsive e-commerce platform built with <b>Re
 <li>Responsive Design: Optimized for both desktop and mobile devices.</li>
 <li>Admin Dashboard: Manage products, orders, and users.</li>
 </ul>
+
+<h3>Tech Stack</h3>
+<ul>
+<li>Frontend: React.js, React Router</li>
+<li>Styling: Tailwind CSS</li>
+<li>Backend: JSON Server</li>
+</ul>
