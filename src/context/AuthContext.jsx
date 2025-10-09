@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.get(`http://localhost:5000/users?email=${email}`);
+      const res = await axios.get(`https://timesync-e-commerce.onrender.com/users?email=${email}`);
       if (res.data.length === 0) {
         throw new Error("Invalid credentials");
       }

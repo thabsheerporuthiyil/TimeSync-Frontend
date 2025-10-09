@@ -11,7 +11,7 @@ export function ShopProvider({ children }) {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("https://timesync-e-commerce.onrender.com/products");
       setProducts(res.data);
     } catch (err) {
       console.error("Error fetching products:", err);
@@ -33,7 +33,7 @@ export function ShopProvider({ children }) {
     if (!user) return;
     const updatedUser = { ...user, ...updates };
     try {
-      await axios.patch(`http://localhost:5000/users/${user.id}`, updates);
+      await axios.patch(`https://timesync-e-commerce.onrender.com/users/${user.id}`, updates);
       setUser(updatedUser);
     } catch (err) {
       console.error("Failed to update user:", err);
