@@ -32,7 +32,6 @@ export default function Orders() {
     fetchOrders();
   }, [user, navigate]);
 
-  // ✅ Cancel order (do not remove it, just mark as cancelled)
   const handleCancel = async (orderId) => {
     try {
       const userRes = await axios.get(`https://timesync-e-commerce.onrender.com/users/${user.id}`);
@@ -41,7 +40,6 @@ export default function Orders() {
       const updatedOrders = await Promise.all(
         userData.orders.map(async (order) => {
           if (order.orderId === orderId) {
-            // Restore product stock
             for (const item of order.items) {
               const productRes = await axios.get(
                 `https://timesync-e-commerce.onrender.com/products/${item.id}`
@@ -52,20 +50,16 @@ export default function Orders() {
                 stock: updatedStock,
               });
             }
-
-            // Return updated order with new status
             return { ...order, status: "Cancelled" };
           }
           return order;
         })
       );
 
-      // Update user in backend
       await axios.patch(`https://timesync-e-commerce.onrender.com/users/${user.id}`, {
         orders: updatedOrders,
       });
 
-      // Update frontend + localStorage
       setOrders(updatedOrders);
       const updatedUser = { ...user, orders: updatedOrders };
       localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -82,8 +76,50 @@ export default function Orders() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8 text-center">
-          <p className="text-gray-600">Loading orders...</p>
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8 text-center animate-pulse bg-gray-200 h-10 rounded w-64 mx-auto"></h1>
+
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 mb-6 animate-pulse"
+            >
+              <div className="flex justify-between mb-4 pb-4 border-b border-gray-200">
+                <div className="space-y-2">
+                  <div className="h-5 bg-gray-200 rounded w-40"></div>
+                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-6 w-20 bg-gray-200 rounded"></div>
+                  <div className="h-6 w-24 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+
+              {[...Array(2)].map((_, j) => (
+                <div key={j} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-3 bg-gray-200 rounded w-24"></div>
+                      <div className="h-3 bg-gray-200 rounded w-20"></div>
+                    </div>
+                  </div>
+                  <div className="h-4 bg-gray-200 rounded w-12"></div>
+                </div>
+              ))}
+
+              <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-4">
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-6 bg-gray-200 rounded w-20"></div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-48"></div>
+                <div className="h-3 bg-gray-200 rounded w-40"></div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -148,7 +184,6 @@ export default function Orders() {
                         {order.status || "Processing"}
                       </span>
 
-                      {/* ✅ Show cancel button only if not cancelled/delivered */}
                       {(!order.status ||
                         order.status === "Processing" ||
                         order.status === "Confirmed") && (
