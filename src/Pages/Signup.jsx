@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import signVideo from '../assets/signvideo.mp4';
+
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -119,7 +121,7 @@ const Signup = () => {
             playsInline 
             className="absolute inset-0 w-full h-full object-cover z-0"
           >
-            <source src="src/assets/signvideo.mp4" />
+            <source src={signVideo} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           

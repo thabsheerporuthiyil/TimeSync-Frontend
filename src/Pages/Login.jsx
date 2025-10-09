@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../context/UserContext';
+import logVideo from '../assets/logvideo.mp4'
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -68,7 +69,7 @@ const Login = () => {
             playsInline 
             className="absolute inset-0 w-full h-full object-cover z-0"
           >
-            <source src="src/assets/logvideo.mp4" />
+            <source src={logVideo} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
