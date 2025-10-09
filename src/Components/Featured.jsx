@@ -6,7 +6,7 @@ export default function Featured() {
 const [categories, setCategories] = useState([]);
 
 useEffect(() => {
-  axios.get("http://localhost:5000/categories")
+  axios.get("https://timesync-e-commerce.onrender.com/categories")
     .then(res => { setCategories(res.data); })
     .catch(err => { console.error("Error fetching categories:", err); });
 }, []);

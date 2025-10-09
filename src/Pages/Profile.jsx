@@ -20,7 +20,7 @@ export default function Profile() {
     const fetchUserData = async () => {
       if (user) {
         try {
-          const res = await axios.get(`http://localhost:5000/users/${user.id}`);
+          const res = await axios.get(`https://timesync-e-commerce.onrender.com/users/${user.id}`);
           setDbUser(res.data);
         } catch (err) {
           console.error("Error fetching user:", err);

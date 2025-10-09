@@ -19,7 +19,7 @@ export default function Orders() {
 
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/users/${user.id}`);
+        const res = await axios.get(`https://timesync-e-commerce.onrender.com/users/${user.id}`);
         setOrders(res.data.orders || []);
       } catch (error) {
         console.error("Error loading orders:", error);
@@ -35,7 +35,7 @@ export default function Orders() {
   // ✅ Cancel order (do not remove it, just mark as cancelled)
   const handleCancel = async (orderId) => {
     try {
-      const userRes = await axios.get(`http://localhost:5000/users/${user.id}`);
+      const userRes = await axios.get(`https://timesync-e-commerce.onrender.com/users/${user.id}`);
       const userData = userRes.data;
 
       const updatedOrders = await Promise.all(
@@ -44,11 +44,11 @@ export default function Orders() {
             // Restore product stock
             for (const item of order.items) {
               const productRes = await axios.get(
-                `http://localhost:5000/products/${item.id}`
+                `https://timesync-e-commerce.onrender.com/products/${item.id}`
               );
               const product = productRes.data;
               const updatedStock = (product.stock || 0) + (item.quantity || 1);
-              await axios.patch(`http://localhost:5000/products/${item.id}`, {
+              await axios.patch(`https://timesync-e-commerce.onrender.com/products/${item.id}`, {
                 stock: updatedStock,
               });
             }
@@ -61,7 +61,7 @@ export default function Orders() {
       );
 
       // Update user in backend
-      await axios.patch(`http://localhost:5000/users/${user.id}`, {
+      await axios.patch(`https://timesync-e-commerce.onrender.com/users/${user.id}`, {
         orders: updatedOrders,
       });
 

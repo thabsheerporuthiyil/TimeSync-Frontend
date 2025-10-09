@@ -85,11 +85,11 @@ const handlePayment = async (e) => {
     if (!loggedInUser) return alert("Please log in first");
 
     // Fetch user data
-    const userRes = await axios.get(`http://localhost:5000/users/${loggedInUser.id}`);
+    const userRes = await axios.get(`https://timesync-e-commerce.onrender.com/users/${loggedInUser.id}`);
     const userData = userRes.data;
 
     // Fetch all products
-    const productsRes = await axios.get("http://localhost:5000/products");
+    const productsRes = await axios.get("https://timesync-e-commerce.onrender.com/products");
     const allProducts = productsRes.data;
 
     // Update stock for each item in cart
@@ -107,13 +107,13 @@ const handlePayment = async (e) => {
     // Save updated products to server
     await Promise.all(
       updatedProducts.map((product) =>
-        axios.patch(`http://localhost:5000/products/${product.id}`, { stock: product.stock })
+        axios.patch(`https://timesync-e-commerce.onrender.com/products/${product.id}`, { stock: product.stock })
       )
     );
 
     // Add order to user
     const updatedOrders = [...(userData.orders || []), newOrder];
-    await axios.patch(`http://localhost:5000/users/${loggedInUser.id}`, { orders: updatedOrders });
+    await axios.patch(`https://timesync-e-commerce.onrender.com/users/${loggedInUser.id}`, { orders: updatedOrders });
 
     // Update localStorage
     const updatedUser = { ...userData, orders: updatedOrders };

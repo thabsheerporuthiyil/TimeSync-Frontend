@@ -33,7 +33,7 @@ export default function Watches() {
   // Fetch products
   useEffect(() => {
     axios
-      .get("http://localhost:5000/products")
+      .get("https://timesync-e-commerce.onrender.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error("Error fetching products:", err));
   }, []);

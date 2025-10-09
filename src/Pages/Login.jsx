@@ -13,7 +13,7 @@ const Login = () => {
   e.preventDefault();
 
   try {
-    const response = await fetch(`http://localhost:5000/users?email=${email}`);
+    const response = await fetch(`https://timesync-e-commerce.onrender.com/users?email=${email}`);
     const data = await response.json();
 
     if (data.length === 0) {
