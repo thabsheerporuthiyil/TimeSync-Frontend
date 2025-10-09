@@ -68,7 +68,7 @@ const Login = () => {
             playsInline 
             className="absolute inset-0 w-full h-full object-cover z-0"
           >
-            <source src="https://youtu.be/Xzi9uoAA6ek" />
+            <source src="src/assets/logvideo.mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
