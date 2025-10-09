@@ -9,35 +9,45 @@ import "react-toastify/dist/ReactToastify.css";
 export default function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const { cart, wishlist, addToCart, addToWishlist } = useContext(ShopContext);
+  const [loading, setLoading] = useState(true);
+
+  const { cart, wishlist, addToCart, toggleWishlist } = useContext(ShopContext);
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`https://timesync-e-commerce.onrender.com/products/${id}`)
       .then((res) => setProduct(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (!product) {
-    return <p className="mt-20 text-center">Loading product...</p>;
+  if (loading) {
+    return (
+      <div className="mt-20 flex flex-col items-center p-6">
+        <div className="w-64 h-64 bg-gray-200 rounded mb-4 animate-pulse"></div>
+        <div className="h-6 bg-gray-200 rounded w-48 mb-2 animate-pulse"></div>
+        <div className="h-5 bg-gray-200 rounded w-32 mb-2 animate-pulse"></div>
+        <div className="h-6 bg-gray-200 rounded w-24 mb-4 animate-pulse"></div>
+        <div className="flex gap-4">
+          <div className="px-4 py-2 bg-gray-200 rounded w-32 h-10 animate-pulse"></div>
+          <div className="px-4 py-2 bg-gray-200 rounded w-32 h-10 animate-pulse"></div>
+        </div>
+        <div className="h-4 bg-gray-200 rounded w-20 mt-4 animate-pulse"></div>
+      </div>
+    );
   }
 
-  const isInWishlist = wishlist.some((item) => item.id === product.id);
   const existingCartItem = cart.find((item) => item.id === product.id);
   const remainingStock = product.stock - (existingCartItem?.quantity || 0);
+  const isInWishlist = wishlist.some((item) => item.id === product.id);
 
-  // Add to Cart with stock validation
   const handleAddToCart = () => {
     if (!user) {
       toast.error("You must be logged in!");
       navigate("/login");
-      return;
-    }
-
-    if (product.stock <= 0) {
-      toast.error("This product is out of stock!");
       return;
     }
 
@@ -50,21 +60,17 @@ export default function ProductPage() {
     toast.success("Added to Cart!");
   };
 
-  // Add to Wishlist
-  const handleAddToWishlist = () => {
+  const handleWishlist = () => {
     if (!user) {
       toast.error("You must be logged in!");
       navigate("/login");
       return;
     }
 
-    if (isInWishlist) {
-      toast.warning("Already in Wishlist!");
-      return;
-    }
+    toggleWishlist(product);
 
-    addToWishlist(product);
-    toast.success("Added to Wishlist!");
+    if (isInWishlist) toast.info("Removed from Wishlist!");
+    else toast.success("Added to Wishlist!");
   };
 
   return (
@@ -74,6 +80,7 @@ export default function ProductPage() {
         alt={product.name}
         className="w-64 h-64 object-contain mb-4"
       />
+
       <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
       <p className="text-lg text-gray-600 mb-2">Brand: {product.brand}</p>
       <p className="text-xl font-bold text-blue-600 mb-2">₹{product.price}</p>
@@ -103,14 +110,14 @@ export default function ProductPage() {
         </button>
 
         <button
-          onClick={handleAddToWishlist}
+          onClick={handleWishlist}
           className={`px-4 py-2 rounded transition ${
             isInWishlist
-              ? "bg-gray-400 text-white cursor-not-allowed"
+              ? "bg-gray-400 text-white"
               : "bg-red-600 text-white hover:bg-red-700"
           }`}
         >
-          {isInWishlist ? "Already in Wishlist" : "Wishlist"}
+          {isInWishlist ? "Remove Wishlist" : "Wishlist"}
         </button>
       </div>
 
