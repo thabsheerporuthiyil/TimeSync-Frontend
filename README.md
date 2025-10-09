@@ -1,4 +1,3 @@
- HEAD
 <h1>TimeSync E-Commerce</h1>
 
 <p>
@@ -21,6 +20,3 @@ TimeSync E-Commerce is a modern, responsive e-commerce platform built with <b>Re
 <li>Styling: Tailwind CSS</li>
 <li>Backend: JSON Server</li>
 </ul>
-
-# TimeSync-E-Commerce
- e990f82 (Initial commit)
