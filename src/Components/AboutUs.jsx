@@ -8,7 +8,7 @@ export default function AboutUs() {
     {/* Left Side Video */}
     <div>
       <video
-        src="https://youtu.be/i6x6YTnvDNQ"
+        src="src/assests/video.mp4"
         autoPlay
         loop
         muted
