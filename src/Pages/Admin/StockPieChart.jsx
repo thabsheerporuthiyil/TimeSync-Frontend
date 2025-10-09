@@ -11,7 +11,7 @@ export default function StockPieChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/products");
+        const res = await axios.get("https://timesync-e-commerce.onrender.com/products");
         const products = res.data || [];
 
         const inStock = products.filter((p) => p.stock > 0).length;

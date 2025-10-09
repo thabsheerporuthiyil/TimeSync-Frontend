@@ -18,7 +18,7 @@ const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"
 
 useEffect(() => {
   axios
-    .get("http://localhost:5000/products")
+    .get("https://timesync-e-commerce.onrender.com/products")
     .then((res) => {
       const products = res.data;
 

@@ -15,7 +15,7 @@ const [brandData, setBrandData] = useState([]);
 
 useEffect(() => {
   axios
-    .get("http://localhost:5000/users")
+    .get("https://timesync-e-commerce.onrender.com/users")
     .then((res) => {
       const users = res.data;
       const totals = {};

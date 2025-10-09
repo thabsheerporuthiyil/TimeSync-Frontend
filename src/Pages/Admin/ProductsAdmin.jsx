@@ -23,7 +23,7 @@ useEffect(() => {
 
 const fetchProducts = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/products");
+    const res = await axios.get("https://timesync-e-commerce.onrender.com/products");
     setProducts(res.data);
     setFilteredProducts(res.data);
   } catch (error) {
@@ -81,7 +81,7 @@ const handleSaveNewProduct = async () => {
       stock: Number(newProduct.stock),
     };
     // send data to server
-    const res = await axios.post("http://localhost:5000/products", productData);
+    const res = await axios.post("https://timesync-e-commerce.onrender.com/products", productData);
     setProducts(prev => [...prev, res.data]);
     setIsAddingProduct(false);
     toast.success("Product added successfully!");
@@ -112,7 +112,7 @@ const handleSaveEdit = async () => {
   setIsLoading(true);
   try {
     const updatedProduct = { ...editingProduct, stock: Number(editingProduct.stock) };
-    await axios.put(`http://localhost:5000/products/${editingProduct.id}`, updatedProduct);
+    await axios.put(`https://timesync-e-commerce.onrender.com/products/${editingProduct.id}`, updatedProduct);
     setProducts(products.map(product => 
       product.id === editingProduct.id ? updatedProduct : product
     ));
@@ -132,7 +132,7 @@ const handleDelete = async (productId) => {
 
   setIsLoading(true);
   try {
-    await axios.delete(`http://localhost:5000/products/${productId}`);
+    await axios.delete(`https://timesync-e-commerce.onrender.com/products/${productId}`);
     setProducts(products.filter(product => product.id !== productId));
     toast.success("Product deleted successfully!");
   } catch (error) {

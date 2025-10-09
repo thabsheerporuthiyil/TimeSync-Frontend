@@ -28,15 +28,15 @@ useEffect(() => {
     setLoading(true);
 
     // Fetch products
-    const productsRes = await axios.get("http://localhost:5000/products");
+    const productsRes = await axios.get("https://timesync-e-commerce.onrender.com/products");
     const products = productsRes.data;
 
     // Fetch users
-    const usersRes = await axios.get("http://localhost:5000/users");
+    const usersRes = await axios.get("https://timesync-e-commerce.onrender.com/users");
     const users = usersRes.data;
 
     // Fetch brands
-    const brandsRes = await axios.get("http://localhost:5000/brands");
+    const brandsRes = await axios.get("https://timesync-e-commerce.onrender.com/brands");
     const brands = brandsRes.data;
 
     // Calculate stats

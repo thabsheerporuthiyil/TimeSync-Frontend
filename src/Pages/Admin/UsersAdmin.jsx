@@ -17,7 +17,7 @@ export default function UsersAdmin() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/users");
+      const res = await axios.get("https://timesync-e-commerce.onrender.com/users");
       setUsers(res.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -27,7 +27,7 @@ export default function UsersAdmin() {
   const toggleBlockUser = async (user) => {
     try {
       const updatedUser = { ...user, blocked: !user.blocked };
-      await axios.patch(`http://localhost:5000/users/${user.id}`, {
+      await axios.patch(`https://timesync-e-commerce.onrender.com/users/${user.id}`, {
         blocked: updatedUser.blocked,
       });
       setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));

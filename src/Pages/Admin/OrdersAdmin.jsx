@@ -16,7 +16,7 @@ export default function OrdersAdmin() {
   }, []);
 
   const fetchOrders = async () => {
-    const res = await axios.get("http://localhost:5000/users");
+    const res = await axios.get("https://timesync-e-commerce.onrender.com/users");
     const allOrders = res.data
       .filter((u) => u.orders && u.orders.length > 0)
       .flatMap((u) =>
@@ -45,14 +45,14 @@ export default function OrdersAdmin() {
     if (!selectedOrder) return;
 
     try {
-      const userRes = await axios.get(`http://localhost:5000/users/${selectedOrder.userId}`);
+      const userRes = await axios.get(`https://timesync-e-commerce.onrender.com/users/${selectedOrder.userId}`);
       const userData = userRes.data;
 
       const updatedOrders = userData.orders.map((o) =>
         o.orderId === selectedOrder.orderId ? { ...o, status } : o
       );
 
-      await axios.patch(`http://localhost:5000/users/${selectedOrder.userId}`, {
+      await axios.patch(`https://timesync-e-commerce.onrender.com/users/${selectedOrder.userId}`, {
         orders: updatedOrders,
       });
 
@@ -67,7 +67,7 @@ export default function OrdersAdmin() {
   if (!order) return;
 
   try {
-    const userRes = await axios.get(`http://localhost:5000/users/${order.userId}`);
+    const userRes = await axios.get(`https://timesync-e-commerce.onrender.com/users/${order.userId}`);
     const userData = userRes.data;
 
     // Remove the order from user's orders
@@ -76,7 +76,7 @@ export default function OrdersAdmin() {
     );
 
     // Update orders
-    await axios.patch(`http://localhost:5000/users/${order.userId}`, {
+    await axios.patch(`https://timesync-e-commerce.onrender.com/users/${order.userId}`, {
       orders: updatedUserOrders,
     });
 
