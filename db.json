@@ -15,34 +15,34 @@
     {
       "id": "3",
       "title": "Luxury Collection",
-      "image": "https://images.unsplash.com/photo-1661030418924-52142661241d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "image": "https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "filterKey": "Luxury"
     }
   ],
   "brands": [
     {
       "name": "Titan",
-      "logo": "https://drive.google.com/file/d/1Ehn16u_MVCn2L2jvqoQ6WbtdclDapVSt/view?usp=drive_link",
+      "logo": "https://drive.google.com/uc?export=view&id=1Ehn16u_MVCn2L2jvqoQ6WbtdclDapVSt",
       "id": "ecb9"
     },
     {
       "name": "Rolex",
-      "logo": "https://drive.google.com/file/d/1BRVb1Xkl5a33x9GCkspq4WzVC-Am43pX/view?usp=drive_link",
+      "logo": "https://drive.google.com/uc?export=view&id=1BRVb1Xkl5a33x9GCkspq4WzVC-Am43pX",
       "id": "796f"
     },
     {
       "name": "Hublot",
-      "logo": "https://drive.google.com/file/d/1VDtc4HNst4J_Zo2Bd8eA-mJrwRdHLQUn/view?usp=drive_link",
+      "logo": "https://drive.google.com/uc?export=view&id=1VDtc4HNst4J_Zo2Bd8eA-mJrwRdHLQUn",
       "id": "4cab"
     },
     {
       "name": "Casio",
-      "logo": "https://drive.google.com/file/d/1d4x9znjXkiqY-Nr1xnmSBczf4DX5Vuix/view?usp=drive_link",
+      "logo": "https://drive.google.com/uc?export=view&id=1d4x9znjXkiqY-Nr1xnmSBczf4DX5Vuix",
       "id": "81c0"
     },
     {
       "name": "Seiko",
-      "logo": "https://drive.google.com/file/d/1Yvgj7w-W2Li0CVKXZT7N_ZHvx2QJ8yK5/view?usp=drive_link",
+      "logo": "https://drive.google.com/uc?export=view&id=1Yvgj7w-W2Li0CVKXZT7N_ZHvx2QJ8yK5",
       "id": "79f2"
     }
   ],
@@ -53,7 +53,7 @@
       "name": "Rolex submariner Automatic Chronometer",
       "price": "30,90,866",
       "category": "Men",
-      "image": "",
+      "image": "https://cdn2.jomashop.com/media/catalog/product/cache/0ee3019724ce73007b606b54ba535a23/r/o/rolex-submariner-automatic-chronometer-black-dial-mens-watch-126610lnbkso.jpg?width=546&height=546",
       "stock": 10
     },
     {
@@ -200,13 +200,9 @@
       "password": "12345678",
       "role": "user",
       "blocked": false,
-      "cart": [
-        
-      ],
+      "cart": [],
       "wishlist": [],
-      "orders": [
-        
-      ]
+      "orders": []
     },
     {
       "id": "5bbf",
@@ -215,12 +211,8 @@
       "password": "12345678",
       "role": "user",
       "cart": [],
-      "wishlist": [
-        
-      ],
-      "orders": [
-        
-      ],
+      "wishlist": [],
+      "orders": [],
       "blocked": true
     },
     {
@@ -230,13 +222,9 @@
       "password": "12345678",
       "role": "admin",
       "blocked": false,
-      "orders": [
-        
-      ],
+      "orders": [],
       "cart": [],
-      "wishlist": [
-        
-      ]
+      "wishlist": []
     }
   ]
 }

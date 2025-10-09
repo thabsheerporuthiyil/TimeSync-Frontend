@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 
 
 const images = [
-  "src/assets/homeimg1.jpg",
-  "src/assets/homeimg3.jpg",
-  "src/assets/homeimg4.jpg",
-  "src/assets/homeimg2.jpg",
-  "src/assets/homeimg5.jpg",
+  "https://images.unsplash.com/photo-1661030418924-52142661241d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1703505841379-2f863b201212?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWVucyUyMHdhdGNoZXN8ZW58MHx8MHx8fDA=",
+  "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTc3M3wwfDF8c2VhcmNofDV8fGZvc3NpbCUyMHdhdGNofGVufDB8fHx8MTY5NjYwMzc5MXww&ixlib=rb-4.0.3&q=80&w=2000",
+  "https://images.unsplash.com/photo-1612817159576-986a0b7a4165?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://hatton-garden-jewellers.co.uk/wp-content/uploads/2024/10/HgF-10.jpg",
 ];
 
 export default function HomeCarousel() {
