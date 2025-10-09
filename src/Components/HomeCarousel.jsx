@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 
 const images = [
-  "https://images.unsplash.com/photo-1708647585551-94645e6125bd?q=80&w=1630&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://i.pinimg.com/1200x/a5/69/68/a569689240e0c70bd840de3b8d068f60.jpg",
   "https://images.unsplash.com/photo-1703505841379-2f863b201212?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWVucyUyMHdhdGNoZXN8ZW58MHx8MHx8fDA=",
   "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTc3M3wwfDF8c2VhcmNofDV8fGZvc3NpbCUyMHdhdGNofGVufDB8fHx8MTY5NjYwMzc5MXww&ixlib=rb-4.0.3&q=80&w=2000",
   "https://images.unsplash.com/photo-1739145349551-6bd99442c50f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
