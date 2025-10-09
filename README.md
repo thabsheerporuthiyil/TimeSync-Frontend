@@ -4,3 +4,8 @@
 <p>
 TimeSync E-Commerce is a modern, responsive e-commerce platform built with <b>React.js</b>. It offers a seamless shopping experience for users to browse, select, and purchase premium watches. The application is designed with a user-friendly interface and optimized performance.
 </p>
+
+<h4>Features</h4>
+<ul>
+<li>User Authentication: Secure sign-up and login functionality.</li>
+</ul>
