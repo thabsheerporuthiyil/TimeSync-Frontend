@@ -7,31 +7,88 @@ export default function Profile() {
   const { user, loading } = useContext(UserContext);
   const navigate = useNavigate();
   const [dbUser, setDbUser] = useState(null);
-
+  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate("/login"); 
+      navigate("/login");
     }
   }, [user, loading, navigate]);
-
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
+        setLoadingData(true);
         try {
           const res = await axios.get(`https://timesync-e-commerce.onrender.com/users/${user.id}`);
           setDbUser(res.data);
         } catch (err) {
           console.error("Error fetching user:", err);
+        } finally {
+          setLoadingData(false);
         }
       }
     };
     fetchUserData();
   }, [user]);
 
-  // Don't render anything until user is loaded
-  if (loading || !user || !dbUser) return null;
+  if (loading || !user || loadingData || !dbUser) {
+    return (
+      <div className="min-h-screen bg-white pt-16 p-6">
+        <div className="max-w-6xl mx-auto animate-pulse">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Profile Card */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-gray-900 to-blue-900 px-8 py-6 text-white flex items-center space-x-4">
+                  <div className="w-20 h-20 bg-gray-400 rounded-full flex items-center justify-center"></div>
+                  <div className="space-y-2 w-full">
+                    <div className="h-6 bg-gray-400 rounded w-48"></div>
+                    <div className="h-4 bg-gray-400 rounded w-32"></div>
+                  </div>
+                </div>
+
+                <div className="p-8 space-y-6">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <div className="h-4 bg-gray-200 rounded w-40"></div>
+                      <div className="h-4 bg-gray-200 rounded w-48"></div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-4 bg-gray-200 rounded w-28"></div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="h-5 bg-gray-200 rounded w-40"></div>
+                    <div className="h-16 bg-gray-200 rounded w-full"></div>
+                    <div className="h-16 bg-gray-200 rounded w-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Summary */}
+            <div className="space-y-8">
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 space-y-2">
+                <div className="h-5 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-28"></div>
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white pt-16">
