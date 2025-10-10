@@ -26,14 +26,14 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-    
+      <ScrollToTop/>
       {!isAdminRoute && <Navbar />}
 
       <ToastContainer position="top-center" autoClose={2000} />
 
       <main className="flex-grow">
         <Routes>
-          <ScrollToTop/>
+          
           <Route path="/" element={<Home />} />
           <Route path="/watches" element={<Watches />} />
           <Route path="/login" element={<Login />} />
