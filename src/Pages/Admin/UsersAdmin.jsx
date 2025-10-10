@@ -180,21 +180,21 @@ export default function UsersAdmin() {
                 <div className="flex items-center justify-center w-8 h-8 bg-blue-50 rounded-lg mx-auto mb-1">
                   <ShoppingCart size={16} className="text-blue-600" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{user.cart?.length}</p>
+                <p className="text-sm font-semibold text-gray-800">{user.cart?.length || 0}</p>
                 <p className="text-xs text-gray-500">Cart</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-8 h-8 bg-purple-50 rounded-lg mx-auto mb-1">
                   <Heart size={16} className="text-purple-600" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{user.wishlist?.length}</p>
+                <p className="text-sm font-semibold text-gray-800">{user.wishlist?.length || 0}</p>
                 <p className="text-xs text-gray-500">Wishlist</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-8 h-8 bg-green-50 rounded-lg mx-auto mb-1">
                   <Package size={16} className="text-green-600" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{user.orders?.length}</p>
+                <p className="text-sm font-semibold text-gray-800">{user.orders?.length || 0}</p>
                 <p className="text-xs text-gray-500">Orders</p>
               </div>
             </div>
