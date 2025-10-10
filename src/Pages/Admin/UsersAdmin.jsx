@@ -39,11 +39,11 @@ export default function UsersAdmin() {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole =
-      roleFilter === "all" || user.role.toLowerCase() === roleFilter.toLowerCase();
+      roleFilter === "all" || user.role?.toLowerCase() === roleFilter.toLowerCase();
 
     return matchesSearch && matchesRole;
   });
