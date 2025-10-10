@@ -91,19 +91,49 @@ fetchDashboardData();
 }, []);
 
 if (loading) {
-return (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
-    <div className="relative">
-      <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      <div className="absolute inset-0 blur-md bg-blue-500/40 rounded-full"></div>
-    </div>
-    <p className="text-blue-400 mt-6 text-lg font-medium tracking-wide animate-pulse">
-      Fetching dashboard insights...
-    </p>
-  </div>
-);
+  return (
+    <div className="min-h-screen bg-gray-950 p-8">
+      {/* Header Skeleton */}
+      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 animate-pulse flex justify-between items-center">
+        <div>
+          <div className="h-6 w-48 bg-gray-800 rounded mb-3"></div>
+          <div className="h-4 w-64 bg-gray-800 rounded"></div>
+        </div>
+        <div className="h-10 w-28 bg-gray-800 rounded"></div>
+      </div>
 
+      {/* Stats Cards Skeleton */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-900 p-6 rounded-2xl border border-gray-800 animate-pulse"
+          >
+            <div className="h-5 w-24 bg-gray-800 rounded mb-4"></div>
+            <div className="h-8 w-16 bg-gray-800 rounded mb-3"></div>
+            <div className="h-6 w-6 bg-gray-800 rounded-full"></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Graphs Section Skeleton */}
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className={`bg-gray-900 p-6 rounded-2xl border border-gray-800 animate-pulse ${
+              i === 2 ? "lg:col-span-2" : ""
+            }`}
+          >
+            <div className="h-6 w-40 bg-gray-800 rounded mb-6"></div>
+            <div className="h-64 bg-gray-800 rounded"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
+
 
   return (
     <>
