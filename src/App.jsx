@@ -18,6 +18,7 @@ import AdminDashboard from "./Pages/Admin/DashboardSideBar";
 import AdminRoute from "./Pages/Admin/AdminRoute";
 import Contact from "./Pages/Contact";
 import Profile from "./Pages/Profile";
+import ScrollToTop from "../ScrollToTop";
 
 function App() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function App() {
 
       <main className="flex-grow">
         <Routes>
+          <ScrollToTop/>
           <Route path="/" element={<Home />} />
           <Route path="/watches" element={<Watches />} />
           <Route path="/login" element={<Login />} />
