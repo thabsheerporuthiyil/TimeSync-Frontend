@@ -1,45 +1,72 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import signVideo from '../assets/signvideo.mp4';
-
 
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message,setMessage]=useState('')
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const navigate=useNavigate();
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const userData={name,email,password,role:"user"};
 
-    try{
-        let response=await fetch('https://timesync-e-commerce.onrender.com/users',{
-            method:'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
-        });
-        if (response.ok) {
+    
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setMessage('All fields are required.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setMessage('Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage('Password must be at least 6 characters.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const checkResponse = await fetch(`https://timesync-e-commerce.onrender.com/users?email=${email}`);
+      const existingUsers = await checkResponse.json();
+      if (existingUsers.length > 0) {
+        setMessage('Email is already registered. Please log in.');
+        setLoading(false);
+        return;
+      }
+
+      const userData = { name, email, password, role: 'user' };
+      const response = await fetch('https://timesync-e-commerce.onrender.com/users', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
         const data = await response.json();
-        setMessage('Signup successful!');
-        navigate('/login')
+        setMessage('Signup successful! Redirecting...');
         console.log('User created:', data);
 
-        // Clear form after success
+        
         setName('');
         setEmail('');
         setPassword('');
-      }
-      else{
+
+        setTimeout(() => navigate('/login'), 1500);
+      } else {
         setMessage('Signup failed. Please try again.');
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error:', error);
       setMessage('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,6 +89,7 @@ const Signup = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
               />
             </div>
 
@@ -75,6 +103,7 @@ const Signup = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
             
@@ -88,14 +117,18 @@ const Signup = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
             
             <button
-              className="w-full bg-white text-gray-800 font-bold py-3 rounded-lg hover:bg-gray-900 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50"
+              disabled={loading}
+              className={`w-full bg-white text-gray-800 font-bold py-3 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50 ${
+                loading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-900 hover:text-white'
+              }`}
               type="submit"
             >
-              Create Account
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 
@@ -111,9 +144,8 @@ const Signup = () => {
           </div>
         </div>
         
-        {/* Video Part */}
+        {/* Video Section */}
         <div className="relative w-full md:w-1/2 min-h-[400px] md:min-h-full hidden md:block">
-          {/* Background Video */}
           <video 
             autoPlay 
             loop 
@@ -127,7 +159,6 @@ const Signup = () => {
           
           <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
           
-          {/* Welcome Text */}
           <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white p-10">
             <h2 className="text-5xl font-bold tracking-tight">Join Our Community</h2>
             <p className="mt-2 text-lg text-gray-300">
