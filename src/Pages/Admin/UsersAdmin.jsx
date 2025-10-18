@@ -1,12 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { User, Shield, ShoppingCart, Heart, Package, Lock, Unlock, Search, Filter, ChevronDown } from "lucide-react";
+import {
+  User,
+  Shield,
+  ShoppingCart,
+  Heart,
+  Package,
+  Lock,
+  Unlock,
+  Search,
+  Filter,
+  ChevronDown,
+} from "lucide-react";
 import StatCard from "./StatCard";
 
 export default function UsersAdmin() {
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null); //user detail in modal
+  const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -17,8 +28,17 @@ export default function UsersAdmin() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("https://timesync-e-commerce.onrender.com/users");
-      setUsers(res.data);
+      const res = await axios.get(
+        "https://timesync-e-commerce.onrender.com/users"
+      );
+      // to prevent undefined arrays
+      const normalizedUsers = res.data.map((u) => ({
+        ...u,
+        cart: u.cart || [],
+        wishlist: u.wishlist || [],
+        orders: u.orders || [],
+      }));
+      setUsers(normalizedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -27,9 +47,10 @@ export default function UsersAdmin() {
   const toggleBlockUser = async (user) => {
     try {
       const updatedUser = { ...user, blocked: !user.blocked };
-      await axios.patch(`https://timesync-e-commerce.onrender.com/users/${user.id}`, {
-        blocked: updatedUser.blocked,
-      });
+      await axios.patch(
+        `https://timesync-e-commerce.onrender.com/users/${user.id}`,
+        { blocked: updatedUser.blocked }
+      );
       setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
       setSelectedUser(updatedUser);
     } catch (error) {
@@ -37,34 +58,37 @@ export default function UsersAdmin() {
     }
   };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole =
-      roleFilter === "all" || user.role?.toLowerCase() === roleFilter.toLowerCase();
+      roleFilter === "all" ||
+      user.role?.toLowerCase() === roleFilter.toLowerCase();
 
     return matchesSearch && matchesRole;
   });
 
   const getFilterButtonText = () => {
     switch (roleFilter) {
-      case "admin": return "Admins";
-      case "user": return "Users";
-      default: return "Filter";
+      case "admin":
+        return "Admins";
+      case "user":
+        return "Users";
+      default:
+        return "Filter";
     }
   };
 
   // Stat cards data
   const totalUsers = users.length;
-  const totalAdmins = users.filter(u => u.role === "admin").length;
-  const totalBlocked = users.filter(u => u.blocked).length;
-  const totalActive = users.filter(u => !u.blocked).length;
+  const totalAdmins = users.filter((u) => u.role === "admin").length;
+  const totalBlocked = users.filter((u) => u.blocked).length;
+  const totalActive = users.filter((u) => !u.blocked).length;
 
   return (
     <div className="p-6 bg-white min-h-screen">
-
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
         <div>
@@ -79,7 +103,10 @@ export default function UsersAdmin() {
         {/* Search and Filter */}
         <div className="flex gap-4 mt-4 md:mt-0">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
+            />
             <input
               type="text"
               placeholder="Search users..."
@@ -104,20 +131,41 @@ export default function UsersAdmin() {
               <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                 <div className="py-1">
                   <button
-                    onClick={() => { setRoleFilter("all"); setShowFilterDropdown(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${roleFilter === "all" ? "bg-blue-50 text-blue-600" : "text-gray-700"}`}
+                    onClick={() => {
+                      setRoleFilter("all");
+                      setShowFilterDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                      roleFilter === "all"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700"
+                    }`}
                   >
                     All Users
                   </button>
                   <button
-                    onClick={() => { setRoleFilter("admin"); setShowFilterDropdown(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${roleFilter === "admin" ? "bg-blue-50 text-blue-600" : "text-gray-700"}`}
+                    onClick={() => {
+                      setRoleFilter("admin");
+                      setShowFilterDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                      roleFilter === "admin"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700"
+                    }`}
                   >
                     Admins Only
                   </button>
                   <button
-                    onClick={() => { setRoleFilter("user"); setShowFilterDropdown(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${roleFilter === "user" ? "bg-blue-50 text-blue-600" : "text-gray-700"}`}
+                    onClick={() => {
+                      setRoleFilter("user");
+                      setShowFilterDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                      roleFilter === "user"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700"
+                    }`}
                   >
                     Users Only
                   </button>
@@ -138,10 +186,26 @@ export default function UsersAdmin() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-        <StatCard title="Total Users" value={totalUsers} icon={<User size={24} className="text-blue-600" />} />
-        <StatCard title="Admins" value={totalAdmins} icon={<Shield size={24} className="text-purple-600" />} />
-        <StatCard title="Blocked Users" value={totalBlocked} icon={<Lock size={24} className="text-red-600" />} />
-        <StatCard title="Active Users" value={totalActive} icon={<Unlock size={24} className="text-green-600" />} />
+        <StatCard
+          title="Total Users"
+          value={totalUsers}
+          icon={<User size={24} className="text-blue-600" />}
+        />
+        <StatCard
+          title="Admins"
+          value={totalAdmins}
+          icon={<Shield size={24} className="text-purple-600" />}
+        />
+        <StatCard
+          title="Blocked Users"
+          value={totalBlocked}
+          icon={<Lock size={24} className="text-red-600" />}
+        />
+        <StatCard
+          title="Active Users"
+          value={totalActive}
+          icon={<Unlock size={24} className="text-green-600" />}
+        />
       </div>
 
       {/* Users Grid */}
@@ -156,14 +220,29 @@ export default function UsersAdmin() {
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full ${user.blocked ? "bg-red-100" : "bg-blue-100"}`}>
-                  <User className={user.blocked ? "text-red-600" : "text-blue-600"} size={24} />
+                <div
+                  className={`p-3 rounded-full ${
+                    user.blocked ? "bg-red-100" : "bg-blue-100"
+                  }`}
+                >
+                  <User
+                    className={user.blocked ? "text-red-600" : "text-blue-600"}
+                    size={24}
+                  />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-800">{user.name}</h2>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {user.name}
+                  </h2>
                   <p className="text-sm text-gray-600 mt-1">{user.email}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.blocked ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        user.blocked
+                          ? "bg-red-100 text-red-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {user.blocked ? "Blocked" : "Active"}
                     </span>
                     <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
@@ -180,21 +259,27 @@ export default function UsersAdmin() {
                 <div className="flex items-center justify-center w-8 h-8 bg-blue-50 rounded-lg mx-auto mb-1">
                   <ShoppingCart size={16} className="text-blue-600" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{user.cart?.length || 0}</p>
+                <p className="text-sm font-semibold text-gray-800">
+                  {user.cart?.length || 0}
+                </p>
                 <p className="text-xs text-gray-500">Cart</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-8 h-8 bg-purple-50 rounded-lg mx-auto mb-1">
                   <Heart size={16} className="text-purple-600" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{user.wishlist?.length || 0}</p>
+                <p className="text-sm font-semibold text-gray-800">
+                  {user.wishlist?.length || 0}
+                </p>
                 <p className="text-xs text-gray-500">Wishlist</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-8 h-8 bg-green-50 rounded-lg mx-auto mb-1">
                   <Package size={16} className="text-green-600" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{user.orders?.length || 0}</p>
+                <p className="text-sm font-semibold text-gray-800">
+                  {user.orders?.length || 0}
+                </p>
                 <p className="text-xs text-gray-500">Orders</p>
               </div>
             </div>
@@ -213,13 +298,22 @@ export default function UsersAdmin() {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full ${
-                  selectedUser.blocked ? "bg-red-100" : "bg-blue-100"
-                }`}>
-                  <User className={selectedUser.blocked ? "text-red-600" : "text-blue-600"} size={28} />
+                <div
+                  className={`p-3 rounded-full ${
+                    selectedUser.blocked ? "bg-red-100" : "bg-blue-100"
+                  }`}
+                >
+                  <User
+                    className={
+                      selectedUser.blocked ? "text-red-600" : "text-blue-600"
+                    }
+                    size={28}
+                  />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800">{selectedUser.name}</h2>
+                  <h2 className="text-xl font-bold text-gray-800">
+                    {selectedUser.name}
+                  </h2>
                   <p className="text-gray-600">{selectedUser.email}</p>
                 </div>
               </div>
@@ -237,13 +331,17 @@ export default function UsersAdmin() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Role</p>
-                  <p className="font-semibold text-gray-800 capitalize">{selectedUser.role}</p>
+                  <p className="font-semibold text-gray-800 capitalize">
+                    {selectedUser.role}
+                  </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Status</p>
-                  <p className={`font-semibold ${
-                    selectedUser.blocked ? "text-red-600" : "text-green-600"
-                  }`}>
+                  <p
+                    className={`font-semibold ${
+                      selectedUser.blocked ? "text-red-600" : "text-green-600"
+                    }`}
+                  >
                     {selectedUser.blocked ? "Blocked" : "Active"}
                   </p>
                 </div>
@@ -279,16 +377,25 @@ export default function UsersAdmin() {
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <ShoppingCart size={20} className="text-blue-600" />
                     </div>
-                    Cart ({selectedUser.cart.length})
+                    Cart ({selectedUser.cart?.length || 0})
                   </h3>
-                  {selectedUser.cart.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No items in cart</p>
+                  {(selectedUser.cart?.length || 0) === 0 ? (
+                    <p className="text-gray-500 text-center py-4">
+                      No items in cart
+                    </p>
                   ) : (
                     <div className="space-y-3">
-                      {selectedUser.cart.map((item) => (
-                        <div key={item.id} className="bg-white p-3 rounded-lg border border-gray-200">
-                          <p className="font-medium text-gray-800">{item.name}</p>
-                          <p className="text-sm text-gray-600">₹{item.price} × {item.quantity}</p>
+                      {selectedUser.cart?.map((item) => (
+                        <div
+                          key={item.id}
+                          className="bg-white p-3 rounded-lg border border-gray-200"
+                        >
+                          <p className="font-medium text-gray-800">
+                            {item.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            ₹{item.price} × {item.quantity}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -301,15 +408,22 @@ export default function UsersAdmin() {
                     <div className="p-2 bg-purple-100 rounded-lg">
                       <Heart size={20} className="text-purple-600" />
                     </div>
-                    Wishlist ({selectedUser.wishlist.length})
+                    Wishlist ({selectedUser.wishlist?.length || 0})
                   </h3>
-                  {selectedUser.wishlist.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No items in wishlist</p>
+                  {(selectedUser.wishlist?.length || 0) === 0 ? (
+                    <p className="text-gray-500 text-center py-4">
+                      No items in wishlist
+                    </p>
                   ) : (
                     <div className="space-y-2">
-                      {selectedUser.wishlist.map((item) => (
-                        <div key={item.id} className="bg-white p-3 rounded-lg border border-gray-200">
-                          <p className="font-medium text-gray-800">{item.name}</p>
+                      {selectedUser.wishlist?.map((item) => (
+                        <div
+                          key={item.id}
+                          className="bg-white p-3 rounded-lg border border-gray-200"
+                        >
+                          <p className="font-medium text-gray-800">
+                            {item.name}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -322,15 +436,22 @@ export default function UsersAdmin() {
                     <div className="p-2 bg-green-100 rounded-lg">
                       <Package size={20} className="text-green-600" />
                     </div>
-                    Orders ({selectedUser.orders.length})
+                    Orders ({selectedUser.orders?.length || 0})
                   </h3>
-                  {selectedUser.orders.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No orders placed</p>
+                  {(selectedUser.orders?.length || 0) === 0 ? (
+                    <p className="text-gray-500 text-center py-4">
+                      No orders placed
+                    </p>
                   ) : (
                     <div className="space-y-2">
-                      {selectedUser.orders.map((order, i) => (
-                        <div key={i} className="bg-white p-3 rounded-lg border border-gray-200">
-                          <p className="font-medium text-gray-800">Order #{i + 1}</p>
+                      {selectedUser.orders?.map((order, i) => (
+                        <div
+                          key={i}
+                          className="bg-white p-3 rounded-lg border border-gray-200"
+                        >
+                          <p className="font-medium text-gray-800">
+                            Order #{i + 1}
+                          </p>
                         </div>
                       ))}
                     </div>
