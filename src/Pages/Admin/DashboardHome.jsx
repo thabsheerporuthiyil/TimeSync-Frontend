@@ -1,202 +1,185 @@
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { Package, Users, ShoppingCart, Boxes } from "lucide-react";
+import api from "../../api/axios";
+import { Package, Users, ShoppingCart, Boxes, LogOut, LayoutDashboard, Clock } from "lucide-react";
 import StatCard from "./StatCard";
 import BrandRadarChart from "./BrandRadarChart";
 import StockPieChart from "./StockPieChart";
 import BrandCountChart from "./BrandCountChart";
 import { UserContext } from "../../context/UserContext";
-import { AuthContext } from "../../context/AuthContext";
+import RevenueLineChart from "./RevenueLineChart";
 
 export default function DashboardHome() {
-const [stats, setStats] = useState({
-  totalProducts: 0,
-  totalUsers: 0,
-  totalOrders: 0,
-  totalCartItems: 0,
-});
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalUsers: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+  });
 
-const [brandData, setBrandData] = useState({ performance: [], counts: [] });
-const [stockData, setStockData] = useState([]);
-const [loading, setLoading] = useState(false);
-const {user}=useContext(UserContext);
-const {logout}=useContext(AuthContext);
+  const [brandData, setBrandData] = useState({ performance: [], counts: [] });
+  const [stockData, setStockData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user, logout } = useContext(UserContext);
+  const [revenueData, setRevenueData] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-useEffect(() => {
-  const fetchDashboardData = async () => {
-  try {
-    setLoading(true);
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    // Fetch products
-    const productsRes = await axios.get("https://timesync-e-commerce.onrender.com/products");
-    const products = productsRes.data;
-
-    // Fetch users
-    const usersRes = await axios.get("https://timesync-e-commerce.onrender.com/users");
-    const users = usersRes.data;
-
-    // Fetch brands
-    const brandsRes = await axios.get("https://timesync-e-commerce.onrender.com/brands");
-    const brands = brandsRes.data;
-
-    // Calculate stats
-    const totalProducts = products.length;
-    const totalUsers = users.length;
-    const totalOrders = users.reduce((sum, u) => sum + (u.orders?.length || 0), 0);
-    const totalCartItems = users.reduce((sum, u) => sum + (u.cart?.length || 0), 0);
-
-    setStats({ totalProducts, totalUsers, totalOrders, totalCartItems });
-
-    // Brand performance Radar chart
-    const brandPerformance = brands.map((b) => {
-      const sales = users.reduce((userSum, u) => {
-        return (
-          userSum +
-          (u.orders || []).reduce((orderSum, order) => {
-            return (
-              orderSum +
-              (order.items || []).reduce((itemSum, item) => {
-                return item.brand === b.name ? itemSum + (item.quantity || 1) : itemSum;
-              }, 0)
-            );
-          }, 0)
-        );
-      }, 0);
-      return { brand: b.name, sales };
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-GB', { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
     });
+  };
 
-    // Brand product count bar chart
-    const brandCounts = brands.map((b) => {
-      const count = products.filter((p) => p.brand === b.name).length;
-      return { brand: b.name, count };
-    });
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [dashboardRes, revenueRes] = await Promise.all([
+          api.get("admin/dashboard/"),
+          api.get("admin/revenue/")
+        ]);
 
-    // Update state
-    setBrandData({ performance: brandPerformance, counts: brandCounts });
+        setStats(dashboardRes.data.stats);
+        setStockData(dashboardRes.data.stockData);
+        setBrandData({
+          counts: dashboardRes.data.brandCounts,
+          performance: dashboardRes.data.brandCounts.map(b => ({
+            brand: b.name,
+            sales: b.count,
+          })),
+        });
+        setRevenueData(revenueRes.data);
+      } catch (err) {
+        console.error("Dashboard fetch failed", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
 
-    // Stock distribution pie chart
-    const stockDistribution = products.map((p) => ({
-      name: p.name,
-      value: p.stock,
-    }));
-    setStockData(stockDistribution);
-  } catch (err) {
-    console.error("Failed to fetch dashboard data:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
-fetchDashboardData();
-}, []);
-
-if (loading) {
-  return (
-    <div className="min-h-screen bg-gray-950 p-8">
-      {/* Header Skeleton */}
-      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 animate-pulse flex justify-between items-center">
-        <div>
-          <div className="h-6 w-48 bg-gray-800 rounded mb-3"></div>
-          <div className="h-4 w-64 bg-gray-800 rounded"></div>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#030712] p-8 space-y-8 text-slate-200">
+        <div className="h-32 w-full bg-gray-900/50 rounded-3xl animate-pulse border border-gray-800" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-900/50 rounded-3xl animate-pulse border border-gray-800" />
+          ))}
         </div>
-        <div className="h-10 w-28 bg-gray-800 rounded"></div>
       </div>
+    );
+  }
 
-      {/* Stats Cards Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-gray-900 p-6 rounded-2xl border border-gray-800 animate-pulse"
-          >
-            <div className="h-5 w-24 bg-gray-800 rounded mb-4"></div>
-            <div className="h-8 w-16 bg-gray-800 rounded mb-3"></div>
-            <div className="h-6 w-6 bg-gray-800 rounded-full"></div>
+  return (
+    <div className="min-h-screen bg-[#030712] p-4 md:p-8 font-sans text-slate-200">
+
+      {/* Header Section */}
+      <div className="relative overflow-hidden bg-gray-900/40 backdrop-blur-md border border-gray-800 p-8 rounded-[2.5rem] mb-10 shadow-2xl">
+        <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+          <LayoutDashboard size={120} className="text-blue-500" />
+        </div>
+
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-center md:text-left">
+            <div className="flex items-center gap-3 mb-2 justify-center md:justify-start">
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+                Admin Dashboard
+              </h1>
+            </div>
+            <p className="text-slate-400 text-sm md:text-base font-medium">
+              Welcome back, <span className="text-slate-100 font-bold">{user?.name || "Administrator"}</span>.
+            </p>
           </div>
-        ))}
+
+          <div className="flex flex-col md:items-end gap-4 w-full md:w-auto">
+            <div className="bg-gray-950/50 border border-gray-800 px-5 py-2.5 rounded-2xl flex items-center gap-3 backdrop-blur-md shadow-inner">
+              <Clock size={16} className="text-amber-400" />
+              <span className="text-xs font-bold tracking-wider text-slate-300">
+                {formatDate(currentTime)}
+              </span>
+            </div>
+            <button
+              onClick={logout}
+              className="group flex items-center gap-3 bg-white/5 hover:bg-red-500/10 text-slate-300 hover:text-red-500 px-6 py-2.5 rounded-2xl transition-all duration-300 border border-gray-700 hover:border-red-500/50 font-semibold text-sm justify-center"
+            >
+              <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+              Log Out
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Graphs Section Skeleton */}
+      {/* Analytics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Total Revenue" value={`₹${Number(stats.totalRevenue).toLocaleString()}`} icon={<ShoppingCart size={24} />} color="orange" />
+        <StatCard title="Inventory" value={stats.totalProducts} icon={<Boxes size={24} />} color="blue" />
+        <StatCard title="Active Users" value={stats.totalUsers} icon={<Users size={24} />} color="green" />
+        <StatCard title="Total Orders" value={stats.totalOrders} icon={<Package size={24} />} color="purple" />
+      </div>
+
+      {/* Graphs Grid */}
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className={`bg-gray-900 p-6 rounded-2xl border border-gray-800 animate-pulse ${
-              i === 2 ? "lg:col-span-2" : ""
-            }`}
-          >
-            <div className="h-6 w-40 bg-gray-800 rounded mb-6"></div>
-            <div className="h-64 bg-gray-800 rounded"></div>
+        
+        {/* Stock Breakdown */}
+        <div className="group bg-gray-900/40 backdrop-blur-sm p-8 rounded-[2rem] border border-gray-800 hover:border-gray-700 transition-colors shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-lg font-bold text-white tracking-wide">Stock Distribution</h3>
+            <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-widest rounded-full border border-blue-500/20">Units</span>
           </div>
-        ))}
+          <div className="h-[300px] flex items-center justify-center">
+            <StockPieChart />
+          </div>
+        </div>
+
+        {/* Brand Performance Radar */}
+        <div className="group bg-gray-900/40 backdrop-blur-sm p-8 rounded-[2rem] border border-gray-800 hover:border-gray-700 transition-colors shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-lg font-bold text-white tracking-wide">Brand Performance</h3>
+            <span className="px-3 py-1 bg-purple-500/10 text-purple-400 text-[10px] font-bold uppercase tracking-widest rounded-full border border-purple-500/20">Radar</span>
+          </div>
+          <div className="h-[300px] flex items-center justify-center">
+            <BrandRadarChart />
+          </div>
+        </div>
+
+        {/* Revenue Growth (Shared Row) */}
+        <div className="group bg-gray-900/40 backdrop-blur-sm p-8 rounded-[2rem] border border-gray-800 shadow-xl">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-white tracking-wide">Revenue Growth</h3>
+            </div>
+            <span className="px-3 py-1 bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-widest rounded-full border border-amber-500/20">Monthly</span>
+          </div>
+          <RevenueLineChart data={revenueData} />
+        </div>
+
+        {/* Brand Inventory Bar Chart (Shared Row) */}
+        <div className="group bg-gray-900/40 backdrop-blur-sm p-8 rounded-[2rem] border border-gray-800 hover:border-gray-700 transition-colors shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-lg font-bold text-white tracking-wide">Global Inventory</h3>
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-slate-700" />
+            </div>
+          </div>
+          <div className="h-[350px]">
+            <BrandCountChart />
+          </div>
+        </div>
+
+      </div>
+
+      <div className="mt-12 text-center pb-8">
+        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.4em]">TimeSync Control Interface</p>
       </div>
     </div>
-  );
-}
-
-
-  return (
-    <>
-      {/* Header */}
-      <div className="bg-gray-900 text-white p-8 rounded-2xl shadow-lg flex justify-between items-center border border-gray-800">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">
-            Welcome back, <span className="text-blue-400">{user?.name || "Admin"}</span>
-          </h1>
-          <p className="text-gray-400 mt-2 text-sm md:text-base">
-            Here you can manage products, users, and orders.
-          </p>
-        </div>
-
-        <button
-          onClick={logout}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all border border-blue-500"
-        >
-          Logout
-        </button>
-      </div>
-
-      {/* Stats Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        <StatCard
-          title="Total Products"
-          value={stats.totalProducts}
-          icon={<Boxes size={32} className="text-blue-500" />}
-        />
-        <StatCard
-          title="Total Users"
-          value={stats.totalUsers}
-          icon={<Users size={32} className="text-green-500" />}
-        />
-        <StatCard
-          title="Total Orders"
-          value={stats.totalOrders}
-          icon={<Package size={32} className="text-purple-500" />}
-        />
-        <StatCard
-          title="Items in Carts"
-          value={stats.totalCartItems}
-          icon={<ShoppingCart size={32} className="text-orange-500" />}
-        />
-      </div>
-
-      {/* Graphs Section */}
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Stock Pie Chart */}
-        <div className="bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200">
-          <StockPieChart />
-        </div>
-
-        {/* Brand Radar Chart */}
-        <div className="bg-gray-900 p-6 rounded-2xl  border-gray-200">
-          <BrandRadarChart />
-        </div>
-
-        {/* Brand Count Bar Chart */}
-        <div className="bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-200 lg:col-span-2">
-          <BrandCountChart />
-        </div>
-      </div>
-    </>
   );
 }

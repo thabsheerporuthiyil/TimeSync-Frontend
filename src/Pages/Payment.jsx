@@ -1,412 +1,287 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import axios from "axios";
+import { toast } from 'sonner';
+import { ShieldCheck, CreditCard, Truck, ChevronLeft, Lock } from "lucide-react";
+import api from "../api/axios";
 
-const countries = [
-  "India",
-  "United States",
-  "United Kingdom",
-  "Canada",
-  "Australia",
-  "Germany",
-  "France",
-  "Japan",
-  "China",
-];
+const countries = ["India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Japan", "China"];
 
 export default function Payment() {
-const { user } = useContext(UserContext);
-const { cart, clearCart } = useContext(ShopContext);
-const navigate = useNavigate();
+  const { user, loading: userLoading } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const { cart, cartChecked, fetchCart } = useContext(ShopContext);
+  const navigate = useNavigate();
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
+  const [paymentDetails, setPaymentDetails] = useState({
+    billingName: "",
+    billingEmail: "",
+    billingPhone: "",
+    billingAddress: "",
+    billingCity: "",
+    billingState: "",
+    billingZip: "",
+    billingCountry: "India",
+  });
 
-const [paymentMethod, setPaymentMethod] = useState("card");
-const [paymentDetails, setPaymentDetails] = useState({
-  cardNumber: "",
-  name: "",
-  expiry: "",
-  cvv: "",
-  upiId: "",
-  netbankingId: "",
-  billingName: "",
-  billingEmail: "",
-  billingPhone: "",
-  billingAddress: "",
-  billingCity: "",
-  billingState: "",
-  billingZip: "",
-  billingCountry: "India",
-});
+  const totalPrice = cart.reduce(
+    (total, item) => total + Number(item.price.toString().replace(/,/g, "")) * (item.quantity || 1),
+    0
+  );
 
-const totalPrice = cart.reduce(
-  (total, item) =>
-    total + Number(item.price.toString().replace(/,/g, "")) * (item.quantity || 1),
-  0
-);
-
-if (!user) {
-  toast.error("You must be logged in to pay!");
-  navigate("/login");
-  return null;
-}
-
-if (cart.length === 0) {
-  navigate("/watches");
-  return null;
-}
-
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  setPaymentDetails((prev) => ({ ...prev, [name]: value }));
-};
-
-const handlePayment = async (e) => {
-  e.preventDefault();
-
-  const orderId = "ORD" + Date.now() + Math.floor(Math.random() * 1000);
-  const orderDate = new Date().toLocaleDateString();
-  const orderTime = new Date().toLocaleTimeString();
-
-  const newOrder = {
-    orderId,
-    items: [...cart],
-    totalPrice,
-    paymentMethod,
-    paymentDetails,
-    orderDate,
-    orderTime,
-    status: "Processing",
+  const isAddressValid = () => {
+    return Object.values(paymentDetails).every(val => val.trim() !== "");
   };
 
+  useEffect(() => {
+    if (userLoading || !cartChecked) return;
+    if (!user) { navigate("/login"); return; }
+    if (cart.length === 0 && !orderPlaced) { navigate("/watches"); }
+  }, [userLoading, user, cartChecked, cart.length, orderPlaced]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPaymentDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePayment = async (e) => {
+  e.preventDefault();
+
+  if (!isAddressValid()) {
+    toast.error("Please complete your delivery details");
+    return;
+  }
+
+  setLoading(true);
+
   try {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-    if (!loggedInUser) return alert("Please log in first");
-
-    // Fetch user data
-    const userRes = await axios.get(`https://timesync-e-commerce.onrender.com/users/${loggedInUser.id}`);
-    const userData = userRes.data;
-
-    // Fetch all products
-    const productsRes = await axios.get("https://timesync-e-commerce.onrender.com/products");
-    const allProducts = productsRes.data;
-
-    // Update stock for each item in cart
-    const updatedProducts = allProducts.map((product) => {
-      const purchasedItem = cart.find((item) => item.id === product.id);
-      if (purchasedItem) {
-        return {
-          ...product,
-          stock: product.stock - (purchasedItem.quantity || 1),
-        };
-      }
-      return product;
+    // Checkout (only validation)
+    await api.post("orders/checkout/", {
+      billing: {
+        name: paymentDetails.billingName,
+        email: paymentDetails.billingEmail,
+        phone: paymentDetails.billingPhone,
+        address: paymentDetails.billingAddress,
+        city: paymentDetails.billingCity,
+        state: paymentDetails.billingState,
+        zip: paymentDetails.billingZip,
+        country: paymentDetails.billingCountry,
+      },
     });
 
-    // Save updated products to server
-    await Promise.all(
-      updatedProducts.map((product) =>
-        axios.patch(`https://timesync-e-commerce.onrender.com/products/${product.id}`, { stock: product.stock })
-      )
-    );
+    // COD FLOW
+    if (paymentMethod === "cod") {
+      const res = await api.post("orders/cod/", {
+        billing: {
+          name: paymentDetails.billingName,
+          email: paymentDetails.billingEmail,
+          phone: paymentDetails.billingPhone,
+          address: paymentDetails.billingAddress,
+          city: paymentDetails.billingCity,
+          state: paymentDetails.billingState,
+          zip: paymentDetails.billingZip,
+          country: paymentDetails.billingCountry,
+        },
+      });
 
-    // Add order to user
-    const updatedOrders = [...(userData.orders || []), newOrder];
-    await axios.patch(`https://timesync-e-commerce.onrender.com/users/${loggedInUser.id}`, { orders: updatedOrders });
+      finishOrder("cod", res.data.order_id);
+      return;
+    }
 
-    // Update localStorage
-    const updatedUser = { ...userData, orders: updatedOrders };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+    // Create Razorpay order
+    const razor = await api.post("orders/razorpay/create/");
 
-    // Clear cart
-    clearCart();
+    const options = {
+      key: razor.data.key,
+      amount: razor.data.amount,
+      currency: "INR",
+      order_id: razor.data.razorpay_order_id,
+      name: "TimeSync Luxe",
 
-    // Navigate to confirmation
-    navigate("/order-confirmation", { state: { ...newOrder, email: userData.email } });
+      handler: async (res) => {
+        // Verify payment → CREATE ORDER
+        const verify = await api.post("orders/razorpay/verify/", {
+          razorpay_order_id: res.razorpay_order_id,
+          razorpay_payment_id: res.razorpay_payment_id,
+          razorpay_signature: res.razorpay_signature,
+          billing: {
+            name: paymentDetails.billingName,
+            email: paymentDetails.billingEmail,
+            phone: paymentDetails.billingPhone,
+            address: paymentDetails.billingAddress,
+            city: paymentDetails.billingCity,
+            state: paymentDetails.billingState,
+            zip: paymentDetails.billingZip,
+            country: paymentDetails.billingCountry,
+          },
+        });
 
+        finishOrder("razorpay", verify.data.order_id);
+      },
+
+      prefill: {
+        name: user?.name,
+        email: user?.email,
+      },
+
+      theme: { color: "#111827" },
+    };
+
+    new window.Razorpay(options).open();
   } catch (err) {
-    console.error("Error saving order:", err);
-    toast.error("Payment failed!");
+    toast.error(err.response?.data?.error || "Transaction failed");
+  } finally {
+    setLoading(false);
   }
 };
 
 
-return (
-  <div className="mt-20 max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-    <h1 className="text-3xl font-bold mb-8 text-center">Payment</h1>
-    <form onSubmit={handlePayment}>
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Payment Methods & Details */}
-        <div className="flex-1">
-          {/* Order Summary */}
-          <div className="mb-6 p-4 border rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            {cart.map((item) => (
-              <div key={item.id} className="flex justify-between mb-2">
-                <span>{item.name} x {item.quantity || 1}</span>
-                <span>₹{(Number(item.price.toString().replace(/,/g, "")) * (item.quantity || 1)).toLocaleString()}</span>
-              </div>
-            ))}
-            <div className="flex justify-between font-bold text-lg border-t pt-3 mt-3">
-              <span>Total:</span>
-              <span>₹{totalPrice.toLocaleString()}</span>
-            </div>
-          </div>
+  const finishOrder = async (method, orderId) => {
+    setOrderPlaced(true);
+    await fetchCart();
+    navigate("/order-confirmation", {
+      state: { items: cart, paymentDetails, paymentMethod: method, orderId, orderDate: new Date().toLocaleDateString(), orderTime: new Date().toLocaleTimeString(), email: user?.email }
+    });
+    toast.success("Order secured successfully");
+  };
 
-          {/* Payment Methods */}
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-            <div className="flex flex-wrap gap-3 mb-6">
-              {["card", "upi", "netbanking", "cod"].map((method) => (
-                <button
-                  key={method}
-                  type="button"
-                  onClick={() => setPaymentMethod(method)}
-                  className={`px-4 py-2 rounded-lg border-2 font-medium transition-all ${
-                    paymentMethod === method 
-                      ? "bg-blue-600 text-white border-blue-600" 
-                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
-                  }`}
-                >
-                  {method === "card" && "Credit Card"}
-                  {method === "upi" && "UPI"}
-                  {method === "netbanking" && "Net Banking"}
-                  {method === "cod" && "Cash on Delivery"}
-                </button>
-              ))}
-            </div>
+  if (userLoading || !cartChecked) return <div className="h-screen flex items-center justify-center font-serif italic text-gray-400">Initializing Secure Checkout...</div>;
 
-            {/* Card Details */}
-            {paymentMethod === "card" && (
-              <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Name on Card</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={paymentDetails.name}
-                    onChange={handleInputChange}
-                    placeholder="John Doe"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+  return (
+    <div className="min-h-screen bg-[#fafafa] pt-28 pb-20 px-6">
+      <div className="max-w-6xl mx-auto">
 
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block font-semibold mb-2 text-gray-700">Expiry Date</label>
-                    <input
-                      type="text"
-                      name="expiry"
-                      value={paymentDetails.expiry}
-                      onChange={handleInputChange}
-                      placeholder="MM/YY"
-                      className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+        {/* Navigation Back */}
+        <button onClick={() => navigate('/cart')} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black mb-10 transition-colors">
+          <ChevronLeft size={14} /> Back to Bag
+        </button>
 
-                  <div className="flex-1">
-                    <label className="block font-semibold mb-2 text-gray-700">CVV</label>
-                    <input
-                      type="password"
-                      name="cvv"
-                      value={paymentDetails.cvv}
-                      onChange={handleInputChange}
-                      placeholder="123"
-                      className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
+        <form onSubmit={handlePayment} className="grid grid-cols-1 lg:grid-cols-12 gap-16">
 
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Card Number</label>
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    value={paymentDetails.cardNumber}
-                    onChange={handleInputChange}
-                    placeholder="1234 5678 9012 3456"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* UPI */}
-            {paymentMethod === "upi" && (
-              <div className="p-4 border rounded-lg bg-gray-50">
-                <label className="block font-semibold mb-2 text-gray-700">UPI ID</label>
-                <input
-                  type="text"
-                  name="upiId"
-                  value={paymentDetails.upiId}
-                  onChange={handleInputChange}
-                  placeholder="example@upi"
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Netbanking */}
-            {paymentMethod === "netbanking" && (
-              <div className="p-4 border rounded-lg bg-gray-50">
-                <label className="block font-semibold mb-2 text-gray-700">Netbanking ID</label>
-                <input
-                  type="text"
-                  name="netbankingId"
-                  value={paymentDetails.netbankingId}
-                  onChange={handleInputChange}
-                  placeholder="Your Bank ID"
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-            )}
-
-            {/* COD info */}
-            {paymentMethod === "cod" && (
-              <div className="p-4 border rounded-lg bg-gray-50">
-                <p className="text-gray-600 text-center py-4">You will pay at the time of delivery.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Billing Address */}
-        <div className="flex-1">
-          <div className="p-6 border rounded-lg bg-white">
-            <h2 className="text-xl font-semibold mb-6">Billing Address</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block font-semibold mb-2 text-gray-700">Full Name</label>
-                <input
-                  type="text"
-                  name="billingName"
-                  value={paymentDetails.billingName}
-                  onChange={handleInputChange}
-                  placeholder="John Doe"
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    name="billingEmail"
-                    value={paymentDetails.billingEmail}
-                    onChange={handleInputChange}
-                    placeholder="john@example.com"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+          {/* Left Column: Information */}
+          <div className="lg:col-span-7 space-y-12">
+            <section>
+              <h2 className="text-2xl font-serif mb-8 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center font-sans">1</span>
+                Delivery Details
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="md:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">Full Name</label>
+                  <input type="text" name="billingName" value={paymentDetails.billingName} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="e.g. James Bond" required />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Phone</label>
-                  <input
-                    type="text"
-                    name="billingPhone"
-                    value={paymentDetails.billingPhone}
-                    onChange={handleInputChange}
-                    placeholder="1234567890"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-semibold mb-2 text-gray-700">Street Address</label>
-                <input
-                  type="text"
-                  name="billingAddress"
-                  value={paymentDetails.billingAddress}
-                  onChange={handleInputChange}
-                  placeholder="Street Address"
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">City</label>
-                  <input
-                    type="text"
-                    name="billingCity"
-                    value={paymentDetails.billingCity}
-                    onChange={handleInputChange}
-                    placeholder="City"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">Email Address</label>
+                  <input type="email" name="billingEmail" value={paymentDetails.billingEmail} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="james@mi6.com" required />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-2 text-gray-700">State</label>
-                  <input
-                    type="text"
-                    name="billingState"
-                    value={paymentDetails.billingState}
-                    onChange={handleInputChange}
-                    placeholder="State"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">Phone Number</label>
+                  <input type="tel" name="billingPhone" value={paymentDetails.billingPhone} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="+91 00000 00000" required />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">ZIP Code</label>
-                  <input
-                    type="text"
-                    name="billingZip"
-                    value={paymentDetails.billingZip}
-                    onChange={handleInputChange}
-                    placeholder="ZIP Code"
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                <div className="md:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">Street Address</label>
+                  <input type="text" name="billingAddress" value={paymentDetails.billingAddress} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="Suite, Street Name" required />
                 </div>
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Country</label>
-                  <select
-                    name="billingCountry"
-                    value={paymentDetails.billingCountry}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    required
-                  >
-                    {countries.map((country) => (
-                      <option key={country} value={country}>
-                        {country}
-                      </option>
-                    ))}
+                <div className="grid grid-cols-2 md:col-span-2 gap-5">
+                  <input type="text" name="billingCity" value={paymentDetails.billingCity} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="City" required />
+                  <input type="text" name="billingState" value={paymentDetails.billingState} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="State" required />
+                </div>
+                <div className="grid grid-cols-2 md:col-span-2 gap-5">
+                  <input type="text" name="billingZip" value={paymentDetails.billingZip} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm" placeholder="ZIP Code" required />
+                  <select name="billingCountry" value={paymentDetails.billingCountry} onChange={handleInputChange} className="w-full bg-white border-b border-gray-200 py-3 focus:border-black outline-none transition-colors text-sm appearance-none">
+                    {countries.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
               </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-serif mb-8 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center font-sans">2</span>
+                Payment Method
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className={`cursor-pointer border p-6 rounded-2xl flex items-center gap-4 transition-all ${paymentMethod === 'razorpay' ? 'border-black bg-white shadow-sm' : 'border-gray-100 bg-gray-50/50 hover:bg-white'}`}>
+                  <input type="radio" className="hidden" name="method" onClick={() => setPaymentMethod('razorpay')} />
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'razorpay' ? 'border-black' : 'border-gray-300'}`}>
+                    {paymentMethod === 'razorpay' && <div className="w-2 h-2 bg-black rounded-full" />}
+                  </div>
+                  <CreditCard size={20} className="text-gray-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Online Payment</span>
+                </label>
+
+                <label className={`cursor-pointer border p-6 rounded-2xl flex items-center gap-4 transition-all ${paymentMethod === 'cod' ? 'border-black bg-white shadow-sm' : 'border-gray-100 bg-gray-50/50 hover:bg-white'}`}>
+                  <input type="radio" className="hidden" name="method" onClick={() => setPaymentMethod('cod')} />
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === 'cod' ? 'border-black' : 'border-gray-300'}`}>
+                    {paymentMethod === 'cod' && <div className="w-2 h-2 bg-black rounded-full" />}
+                  </div>
+                  <Truck size={20} className="text-gray-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Cash on Delivery</span>
+                </label>
+              </div>
+            </section>
+          </div>
+
+          {/* Right Column: Sticky Summary */}
+          <div className="lg:col-span-5">
+            <div className="bg-white rounded-3xl border border-gray-100 p-8 sticky top-32 shadow-sm">
+              <h3 className="text-lg font-serif mb-6">Order Summary</h3>
+              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 mb-6 scrollbar-hide">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex justify-between items-center text-sm">
+                    <div className="flex gap-4 items-center">
+                      <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
+                        <img src={item.image} className="w-full h-full object-cover" alt="" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 truncate w-32">{item.name}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Qty: {item.quantity}</p>
+                      </div>
+                    </div>
+                    <p className="font-medium">₹{(Number(item.price.toString().replace(/,/g, "")) * (item.quantity || 1)).toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-gray-50 pt-6 space-y-3">
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Subtotal</span>
+                  <span>₹{totalPrice.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Shipping</span>
+                  <span className="text-green-600 font-medium uppercase text-[10px] tracking-widest">Complimentary</span>
+                </div>
+                <div className="flex justify-between text-lg pt-3 border-t border-gray-50 text-gray-900">
+                  <span>Total</span>
+                  <span>₹{totalPrice.toLocaleString()}</span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full mt-8 bg-gray-900 text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-[0.2em] hover:bg-black transition-all shadow-lg shadow-gray-200 disabled:bg-gray-200 flex items-center justify-center gap-3"
+              >
+                {loading ? "Processing..." : (
+                  <>
+                    <Lock size={14} />
+                    {paymentMethod === "cod" ? "Place Order" : "Secure Payment"}
+                  </>
+                )}
+              </button>
+
+              <div className="mt-6 flex items-center justify-center gap-2 text-gray-400">
+                <ShieldCheck size={16} />
+                <span className="text-[10px] font-bold uppercase tracking-tighter">SSL Encrypted Security</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Pay Button */}
-      <div className="mt-8">
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold text-lg"
-        >
-          {paymentMethod === "cod" ? `Place Order (COD)` : `Pay ₹${totalPrice.toLocaleString()}`}
-        </button>
+        </form>
       </div>
-    </form>
-  </div>
-);
+    </div>
+  );
 }

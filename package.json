@@ -11,10 +11,12 @@
     "start": "json-server --watch db.json --host 0.0.0.0 --port $PORT"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.4",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "framer-motion": "^12.23.22",
+    "json-server": "^0.17.4",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -23,11 +25,11 @@
     "react-toastify": "^11.0.5",
     "recharts": "^3.2.1",
     "slick-carousel": "^1.8.1",
+    "sonner": "^2.0.7",
     "swiper": "^12.0.2",
     "tailwind-variants": "^3.1.1",
     "tailwindcss": "^4.1.13",
-    "tailwindcss-animate": "^1.0.7",
-    "json-server": "^0.17.4"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

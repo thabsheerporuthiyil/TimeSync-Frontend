@@ -1,135 +1,192 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { UserContext } from "./UserContext";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { UserContext } from "./UserContext";
+import { API_BASE_URL } from "../config/apiConfig";
+import api from '../api/axios'
 
 export const ShopContext = createContext();
 
 export function ShopProvider({ children }) {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   const [products, setProducts] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [cartChecked, setCartChecked] = useState(false);
+
+  // Products
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://timesync-e-commerce.onrender.com/products");
-      setProducts(res.data);
+      const res = await axios.get(`${API_BASE_URL}products/products/`);
+      setProducts(res.data.results || res.data);
     } catch (err) {
       console.error("Error fetching products:", err);
     }
   };
 
-
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const updateProductStock = (id, newQuantity) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, quantity: newQuantity } : p))
-    );
-  };
 
-  const updateUser = async (updates) => {
-    if (!user) return;
-    const updatedUser = { ...user, ...updates };
-    try {
-      await axios.patch(`https://timesync-e-commerce.onrender.com/users/${user.id}`, updates);
-      setUser(updatedUser);
-    } catch (err) {
-      console.error("Failed to update user:", err);
-    }
-  };
+  //Wishlist
 
-  // Cart
-  const addToCart = async (product) => {
-    if (!user) return;
-    const exists = (user.cart || []).find((item) => item.id === product.id);
-    let newCart;
-    // if exist add quantity 1
-    if (exists) {
-      newCart = user.cart.map((item) =>
-        item.id === product.id
-          ? { ...item, quantity: (item.quantity || 1) + 1 }
-          : item
-      );
-    } else {
-      newCart = [...(user.cart || []), { ...product, quantity: 1 }];
-    }
-    await updateUser({ cart: newCart });
-  };
+  const fetchWishlist = async () => {
+  const token = localStorage.getItem("access");
+  if (!token) return;
 
-  const decreaseFromCart = async (id) => {
-    if (!user) return;
-    const newCart = [];
-    for (let item of user.cart) {
-      if (item.id === id && item.quantity > 1) {
-        newCart.push({ ...item, quantity: item.quantity - 1 });
-      } else if (item.id !== id) {
-        newCart.push(item);
-      }
-    }
-    await updateUser({ cart: newCart });
-  };
+  try {
+    const res = await api.get('wishlist/');
+    setWishlist(res.data.map(item => item.product));
+  } catch (err) {
+    console.error("Fetch wishlist failed", err);
+  }
+};
 
-  // remove an item from cart
-  const removeFromCart = async (id) => {
-    if (!user) return;
-    const newCart = (user.cart || []).filter((item) => item.id !== id);
-    await updateUser({ cart: newCart });
-  };
-
-  const clearCart = async () => {
-    if (!user) return;
-    await updateUser({ cart: [] });
-  };
-
-  // Wishlist
-  const addToWishlist = async (product) => {
-    if (!user) return;
-    if (user.wishlist?.some((item) => item.id === product.id)) return;
-    const newWishlist = [...(user.wishlist || []), product];
-    await updateUser({ wishlist: newWishlist });
-  };
-
-  const removeFromWishlist = async (id) => {
-    if (!user) return;
-    const newWishlist = (user.wishlist || []).filter((item) => item.id !== id);
-    await updateUser({ wishlist: newWishlist });
-  };
+  useEffect(() => {
+  if (user) {
+    fetchWishlist();
+    fetchCart();
+  }
+}, [user]);
 
 
   const toggleWishlist = async (product) => {
-  if (!user) return;
+  if (!localStorage.getItem("access")) return;
 
-  const alreadyInWishlist = user.wishlist?.some((item) => item.id === product.id);
+  const wasWishlisted = wishlist.some(item => item.id === product.id);
+  const previousWishlist = [...wishlist];
 
-  let newWishlist;
-  if (alreadyInWishlist) {
-    newWishlist = user.wishlist.filter((item) => item.id !== product.id);
+  if (wasWishlisted) {
+    setWishlist(wishlist.filter(item => item.id !== product.id));
   } else {
-    newWishlist = [...(user.wishlist || []), product];
+    setWishlist([...wishlist, product]);
   }
 
-  await updateUser({ wishlist: newWishlist });
-  return !alreadyInWishlist; // return true if added, false if removed
+  try {
+    await api.post(`wishlist/${product.id}/toggle/`);
+  } catch (err) {
+    setWishlist(previousWishlist);
+    console.error("Wishlist sync failed:", err);
+  }
 };
 
+
+  const isWishlisted = (productId) =>
+    wishlist.some(item => item.id === productId);
+
+
+ // cart
+
+  const fetchCart = async () => {
+  const token = localStorage.getItem("access");
+  if (!token) {
+    setCart([]);
+    setCartChecked(true);
+    return;
+  }
+
+  try {
+    const res = await api.get('cart/');
+    setCart(
+      res.data.map(item => ({
+        ...item.product,
+        quantity: item.quantity,
+      }))
+    );
+  } catch (err) {
+    console.error("Fetch cart failed", err);
+  } finally {
+    setCartChecked(true);
+  }
+};
+
+  useEffect(() => {
+  fetchProducts(); 
+  
+  const token = localStorage.getItem("access");
+  if (token) {
+    fetchCart();
+    fetchWishlist(); 
+  } else {
+    setCartChecked(true);
+  }
+}, []);
+
+  
+const addToCart = async (product) => {
+  const previousCart = [...cart];
+
+  const existingItem = cart.find(item => item.id === product.id);
+  let updatedCart;
+
+  if (existingItem) {
+    updatedCart = cart.map(item =>
+      item.id === product.id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
+    );
+  } else {
+    updatedCart = [...cart, { ...product, quantity: 1 }];
+  }
+  setCart(updatedCart);
+
+  try {
+    await api.post(`cart/${product.id}/add/`);
+  } catch (err) {
+    setCart(previousCart);
+    throw err; 
+  }
+};
+
+
+  const decreaseFromCart = async (id) => {
+  const previousCart = [...cart];
+  const updatedCart = cart
+    .map((item) =>
+      item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+    )
+    .filter((item) => item.quantity > 0);
+
+  setCart(updatedCart);
+
+  try {
+    await api.post(`cart/${id}/decrease/`);
+  } catch (err) {
+    setCart(previousCart);
+    toast.error("Could not update cart");
+  }
+};
+
+const removeFromCart = async (id) => {
+  const previousCart = [...cart];
+  setCart(cart.filter((item) => item.id !== id));
+
+  try {
+    await api.delete(`cart/${id}/remove/`);
+  } catch (err) {
+    setCart(previousCart); 
+    toast.error("Could not remove item");
+  }
+};
 
   return (
     <ShopContext.Provider
       value={{
-        cart: user?.cart || [],
-        wishlist: user?.wishlist || [],
         products,
         fetchProducts,
+
+        cart,
         addToCart,
+        cartChecked,
+        fetchCart,
         decreaseFromCart,
         removeFromCart,
-        addToWishlist,
-        removeFromWishlist,
-        clearCart,
-        updateProductStock,
-        toggleWishlist
+
+
+        wishlist,
+        fetchWishlist,
+        toggleWishlist,
+        isWishlisted,
       }}
     >
       {children}

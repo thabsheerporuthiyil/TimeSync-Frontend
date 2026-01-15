@@ -1,45 +1,63 @@
-import { createContext, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { UserContext } from "./UserContext";
+// import { createContext, useContext, useEffect, useState } from "react";
+// import api from "../api/axios";
+// import { ENDPOINTS } from "../api/endpoints";
+// import { UserContext } from "./UserContext";
+// import { useNavigate } from "react-router-dom";
 
-export const AuthContext = createContext();
+// export const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const { setUser } = useContext(UserContext);
-  const navigate = useNavigate();
+// export function AuthProvider({ children }) {
+//   const { setUser } = useContext(UserContext);
+//   const navigate = useNavigate();
 
-  const login = async (email, password) => {
-    try {
-      const res = await axios.get(`https://timesync-e-commerce.onrender.com/users?email=${email}`);
-      if (res.data.length === 0) {
-        throw new Error("Invalid credentials");
-      }
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [loading, setLoading] = useState(true);
 
-      const foundUser = res.data[0];
+//   // 🔑 Check auth on app load
+//   useEffect(() => {
+//     const token = localStorage.getItem("access");
 
-      if (foundUser.blocked) {
-        throw new Error("Your account has been blocked. Contact support.");
-      }
+//     if (!token) {
+//       setIsAuthenticated(false);
+//       setLoading(false);
+//       return;
+//     }
 
-      if (foundUser.password !== password) {
-        throw new Error("Invalid credentials");
-      }
+//     api.get(ENDPOINTS.ME)
+//       .then((res) => {
+//         setUser(res.data);
+//         setIsAuthenticated(true);
+//       })
+//       .catch(() => {
+//         localStorage.clear();
+//         setIsAuthenticated(false);
+//       })
+//       .finally(() => setLoading(false));
+//   }, []);
 
-      localStorage.setItem("user", JSON.stringify(foundUser));
-      setUser(foundUser);
-      navigate("/");
-    } catch (err) {
-      console.error("Login failed:", err.message);
-      throw err;
-    }
-  };
+//   const login = async (email, password) => {
+//     const res = await api.post(ENDPOINTS.LOGIN, { email, password });
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    navigate("/login");
-  };
+//     localStorage.setItem("access", res.data.access);
+//     localStorage.setItem("refresh", res.data.refresh);
 
-  return <AuthContext.Provider value={{ login, logout }}>{children}</AuthContext.Provider>;
-}
+//     const me = await api.get(ENDPOINTS.ME);
+//     setUser(me.data);
+
+//     setIsAuthenticated(true);
+//     navigate("/");
+//   };
+
+//   const logout = () => {
+//     localStorage.clear();
+//     setUser(null);
+//     setIsAuthenticated(false);
+//     navigate("/login");
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ isAuthenticated, loading, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// }

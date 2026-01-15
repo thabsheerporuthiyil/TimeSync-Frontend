@@ -37,64 +37,45 @@ const goToSlide = (index) => {
   setCurrentIndex(index);
 };
 
+
   return (
-    <section className="relative w-full h-[90vh] overflow-hidden">
-      {/* Slides */}
+    <section className="relative w-full h-screen overflow-hidden bg-black">
       {images.map((img, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-700 ${
-            index === currentIndex ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${
+            index === currentIndex ? "opacity-100 scale-105" : "opacity-0 scale-100"
           }`}
         >
-          <img
-            src={img}
-            alt={`Slide ${index}`}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40"></div>
+          <img src={img} alt={`Slide ${index}`} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
         </div>
       ))}
 
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white z-10">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          <h2 className="text-5xl md:text-6xl font-bold mb-4">Precision in Every Moment</h2>
-        </h1>
-        <p className="text-lg md:text-xl mb-6"> Discover our exclusive collection of premium watches </p>
-        <Link to="/watches" className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full text-lg font-semibold">
-  Shop Now
-</Link>
-
+      {/* Hero Content */}
+      <div className="absolute inset-0 flex flex-col items-start justify-center px-6 md:px-20 z-10">
+        <div className="max-w-2xl">
+            <h1 className="text-5xl md:text-8xl font-serif font-light text-white mb-6 leading-tight">
+                Precision in <br/> <span className="italic">Every Moment</span>
+            </h1>
+            <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-md font-light">
+                Discover our exclusive collection of premium watches designed for those who value time.
+            </p>
+            <Link to="/watches" className="group relative inline-flex items-center gap-3 bg-white text-black px-8 py-4 overflow-hidden font-semibold transition-all hover:pr-12">
+                <span className="relative z-10">EXPLORE COLLECTION</span>
+                <ChevronRight className="w-5 h-5 transition-all group-hover:translate-x-2" />
+            </Link>
+        </div>
       </div>
 
-      {/* Left Arrow */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black z-20"
-      >
-        <ChevronLeft className="w-6 h-6" />
-      </button>
-
-      {/* Right Arrow */}
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black z-20"
-      >
-        <ChevronRight className="w-6 h-6" />
-      </button>
-
-      {/* Dots */}
-      <div className="absolute bottom-6 flex justify-center w-full space-x-2 z-20">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full ${
-              index === currentIndex ? "bg-blue-600" : "bg-gray-400"
-            }`}
-          ></button>
-        ))}
+      {/* Navigation Controls */}
+      <div className="absolute bottom-10 right-10 flex gap-4 z-20">
+         <button onClick={prevSlide} className="p-3 border border-white/20 text-white hover:bg-white hover:text-black transition-all rounded-full">
+            <ChevronLeft className="w-6 h-6" />
+         </button>
+         <button onClick={nextSlide} className="p-3 border border-white/20 text-white hover:bg-white hover:text-black transition-all rounded-full">
+            <ChevronRight className="w-6 h-6" />
+         </button>
       </div>
     </section>
   );
