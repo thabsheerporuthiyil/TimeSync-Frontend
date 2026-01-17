@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
 import { UserContext } from "./UserContext";
 import { API_BASE_URL } from "../config/apiConfig";
 import api from '../api/axios'
@@ -18,7 +17,7 @@ export function ShopProvider({ children }) {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}products/products/`);
+      const res = await api.get('products/products/');
       setProducts(res.data.results || res.data);
     } catch (err) {
       console.error("Error fetching products:", err);

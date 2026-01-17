@@ -1,36 +1,38 @@
-// useNotificationSocket.js
 import { useEffect, useRef } from "react";
+
+const WS_HOST = import.meta.env.VITE_WS_BASE_URL;
 
 export default function useNotificationSocket(addNotification, user) {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // If we already have a socket, we need to check if we should close it (e.g. user logged out)
-    // or if we need to reconnect (user logged in).
-    // For simplicity, let's close existing specific user sockets if the user changed or logged out.
     if (socketRef.current) {
-      // If we are just re-running but nothing changed that requires restart, we might want to skip,
-      // but since we are adding 'user' to dependency, we want to ensure we have the RIGHT socket.
-      // Simplest strategy: Close old, open new if valid.
       socketRef.current.close();
       socketRef.current = null;
     }
 
     const token = localStorage.getItem("access");
-    if (!token) return;
+    if (!token || !user) return;
 
-    const socket = new WebSocket(
-      `ws://127.0.0.1:8000/ws/notifications/?token=${token}`
-    );
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    let wsBase = window.location.host;
+    // Only use the override in development mode to avoid breaking production
+    // if the production .env has a raw IP but the site uses a domain.
+    if (import.meta.env.DEV && WS_HOST) {
+      wsBase = WS_HOST;
+    }
+    const wsUrl = `${protocol}://${wsBase}/ws/notifications/?token=${token}`;
+
+    const socket = new WebSocket(wsUrl);
+
 
     socketRef.current = socket;
 
     socket.onopen = () => {
-      console.log("🔔 Notification socket connected (ready to receive)");
+      console.log("🔔 Notification socket connected");
     };
 
     socket.onmessage = (event) => {
-      console.log("📩 Notification received:", event.data);
       const notification = JSON.parse(event.data);
       addNotification(notification);
     };
@@ -43,10 +45,6 @@ export default function useNotificationSocket(addNotification, user) {
       console.log("🔕 Notification socket closed");
     };
 
-    return () => {
-      if (socket.readyState === 1) { // OPEN
-        socket.close();
-      }
-    }
-  }, [addNotification, user]); // Added user dependency
+    return () => socket.close();
+  }, [addNotification, user]);
 }

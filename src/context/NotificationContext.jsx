@@ -30,6 +30,11 @@ export function NotificationProvider({ children }) {
     }
   }, [user]);
 
+  // Sync unread count whenever notifications change
+  useEffect(() => {
+    setUnreadCount(notifications.filter(n => !n.is_read).length);
+  }, [notifications]);
+
   const markAsRead = async (id) => {
     try {
       await api.post(`notifications/${id}/read/`);
@@ -38,7 +43,6 @@ export function NotificationProvider({ children }) {
           n.id === id ? { ...n, is_read: true } : n
         )
       );
-      setUnreadCount((c) => Math.max(c - 1, 0));
     } catch (err) {
       console.error("Mark as read failed", err);
     }
@@ -51,8 +55,6 @@ export function NotificationProvider({ children }) {
       }
       return [notification, ...prev];
     });
-
-    setUnreadCount((c) => c + 1);
   }, []);
   useNotificationSocket(addNotification, user);
 
