@@ -14,15 +14,7 @@ export default function useNotificationSocket(addNotification, user) {
     const token = localStorage.getItem("access");
     if (!token || !user) return;
 
-    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    let wsBase = window.location.host;
-    // Only use the override in development mode to avoid breaking production
-    // if the production .env has a raw IP but the site uses a domain.
-    if (import.meta.env.DEV && WS_HOST) {
-      wsBase = WS_HOST;
-    }
-    const wsUrl = `${protocol}://${wsBase}/ws/notifications/?token=${token}`;
-
+    const wsUrl = `wss://${WS_HOST}.sslip.io/ws/notifications/?token=${token}`;
     const socket = new WebSocket(wsUrl);
 
 
