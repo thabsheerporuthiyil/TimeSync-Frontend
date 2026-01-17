@@ -73,10 +73,10 @@ export default function Orders() {
   return (
     <div className="min-h-screen bg-[#fafafa] pt-32 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
-        
+
         {/* Header */}
         <div className="mb-12">
-          <button 
+          <button
             onClick={() => navigate('/watches')}
             className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-blue-600 mb-4 flex items-center gap-2 transition-colors"
           >
@@ -106,7 +106,7 @@ export default function Orders() {
 
               return (
                 <div key={order.orderId} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
-                  
+
                   {/* Order Header */}
                   <div className="px-8 py-6 border-b border-gray-50 bg-white flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-6">
@@ -120,12 +120,12 @@ export default function Orders() {
                         <p className="text-sm font-medium text-gray-900">{order.orderDate}</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                       <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusStyles(order.status)}`}>
                         {order.status}
                       </span>
-                      {(order.status === "Confirmed" || order.status === "Processing") && (
+                      {(order.status !== "Cancelled" && order.status !== "Delivered" && order.paymentMethod === "COD") && (
                         <button
                           onClick={() => handleCancel(order.orderId)}
                           className="text-[10px] font-bold uppercase tracking-widest text-red-400 hover:text-red-600 transition-colors ml-2"
@@ -173,16 +173,16 @@ export default function Orders() {
 
                     {/* Payment Info */}
                     <div className="flex justify-between items-end md:text-right w-full">
-                       <div className="flex gap-4 md:flex-row-reverse w-full text-left md:text-right">
-                          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 text-gray-400 shadow-sm">
-                            <CreditCard size={18} />
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900 uppercase tracking-widest text-[10px] mb-2">Total Amount</p>
-                            <p className="text-2xl font-serif text-gray-900">₹{totalAmount.toLocaleString()}</p>
-                            <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter mt-1">{order.paymentMethod}</p>
-                          </div>
-                       </div>
+                      <div className="flex gap-4 md:flex-row-reverse w-full text-left md:text-right">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-gray-100 text-gray-400 shadow-sm">
+                          <CreditCard size={18} />
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900 uppercase tracking-widest text-[10px] mb-2">Total Amount</p>
+                          <p className="text-2xl font-serif text-gray-900">₹{totalAmount.toLocaleString()}</p>
+                          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter mt-1">{order.paymentMethod}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
