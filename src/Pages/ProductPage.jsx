@@ -1,10 +1,9 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { ShopContext } from "../context/ShopContext";
 import { UserContext } from "../context/UserContext";
 import { toast } from 'sonner';
-import { API_BASE_URL } from "../config/apiConfig";
 import { ShoppingBag, Heart, ArrowLeft, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 
 export default function ProductPage() {
@@ -18,8 +17,8 @@ export default function ProductPage() {
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`${API_BASE_URL}products/products/${id}/`)
+    api
+      .get(`products/products/${id}/`)
       .then((res) => setProduct(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
