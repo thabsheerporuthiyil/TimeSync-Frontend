@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import logVideo from "../assets/logvideo.mp4";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 
 const Login = () => {
@@ -14,28 +14,48 @@ const Login = () => {
 
   const { login, googleLogin } = useContext(UserContext);
 
+  const googleLoginTrigger = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        // Note: useGoogleLogin returns an access_token, not a credential string
+        const user = await googleLogin(tokenResponse.access_token);
+        if (user.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
+      } catch (err) {
+        const errorCode = err.response?.data?.detail;
+        if (errorCode === "ACCOUNT_BLOCKED") {
+          setMessage("Your account has been blocked by admin.");
+        }
+      }
+    },
+    onError: () => setMessage("Google login failed. Please try again."),
+  });
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage("");
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
-  try {
-    const user = await login(email, password);
-    navigate("/");
-  } catch (err) {
-    const errorCode = err.response?.data?.detail;
+    try {
+      const user = await login(email, password);
+      navigate("/");
+    } catch (err) {
+      const errorCode = err.response?.data?.detail;
 
-    if (errorCode === "ACCOUNT_BLOCKED") {
-      setMessage("Your account has been blocked by admin.");
-    } else if (errorCode === "INVALID_CREDENTIALS") {
-      setMessage("Invalid email or password.");
-    } else {
-      setMessage("Login failed. Please try again.");
+      if (errorCode === "ACCOUNT_BLOCKED") {
+        setMessage("Your account has been blocked by admin.");
+      } else if (errorCode === "INVALID_CREDENTIALS") {
+        setMessage("Invalid email or password.");
+      } else {
+        setMessage("Login failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   const handleGoogleSuccess = async (credentialResponse) => {
@@ -46,18 +66,18 @@ const Login = () => {
       } else {
         navigate("/");
       }
-    } catch(err) {
+    } catch (err) {
       const errorCode = err.response?.data?.detail;
       if (errorCode === "ACCOUNT_BLOCKED") {
-      setMessage("Your account has been blocked by admin.");
-    }
+        setMessage("Your account has been blocked by admin.");
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-[#fafafa] flex items-center justify-center pt-24 pb-12 px-6">
       <div className="w-full max-w-5xl grid md:grid-cols-2 bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] rounded-3xl overflow-hidden min-h-[650px]">
-        
+
         {/* Left Side: Video Branding */}
         <div className="relative hidden md:block overflow-hidden">
           <video
@@ -71,13 +91,13 @@ const Login = () => {
           </video>
           {/* Elegant Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/10 to-transparent"></div>
-          
+
           <div className="absolute bottom-16 left-12 right-12 z-20 text-white">
             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-blue-400 block mb-4">
               Welcome Back
             </span>
             <h2 className="text-5xl font-serif tracking-tight leading-tight">
-              Mastery in <br/> Every <span className="italic opacity-70">Detail</span>
+              Mastery in <br /> Every <span className="italic opacity-70">Detail</span>
             </h2>
             <div className="h-[1px] w-20 bg-white/40 mt-8"></div>
           </div>
@@ -157,16 +177,20 @@ const Login = () => {
 
             {/* Google Login Wrapper */}
             <div className="flex justify-center">
-              <div className="w-full max-w-[300px]">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => alert("Google login failed")}
-                  theme="outline"
-                  shape="rectangular"
-                  size="large"
-                  width="100%"
+              <button
+                type="button"
+                onClick={() => googleLoginTrigger()}
+                className="w-full border border-gray-200 bg-white text-gray-900 font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-all shadow-sm group"
+              >
+                <img
+                  src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
+                  className="w-5 h-5 group-hover:scale-110 transition-transform"
+                  alt="Google"
                 />
-              </div>
+                <span className="text-[11px] uppercase tracking-widest font-bold">
+                  Continue with Google
+                </span>
+              </button>
             </div>
           </form>
 

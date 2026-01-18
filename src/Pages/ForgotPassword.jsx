@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { toast } from 'sonner';
-import { Mail, ArrowLeft } from "lucide-react"; // Icons for a premium feel
+import { Mail, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
